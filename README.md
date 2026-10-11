@@ -1,6 +1,6 @@
 # Blockchain UNN website
 
-A responsive implementation of the supplied Home, About, Community, and Events design screenshots. The project uses plain HTML, CSS, and JavaScript, with no runtime dependencies.
+A responsive implementation of the Home, About, Community, and Events pages in [Blockchain UNN UI on Figma](https://www.figma.com/design/zs2LmP0VuyKC3rkuGc7TER/Blockchain-UNN-UI). The project uses plain HTML, CSS, and JavaScript, with no runtime dependencies.
 
 ## Run
 
@@ -19,13 +19,15 @@ npm run build
 
 ## Assets
 
-Homepage images live in `public/images/home/`; the About page group photo lives in `public/images/about/`. Optimized WebP versions of the supplied JPGs are committed for fast page loads. The full-size JPG sources remain in the workspace and are ignored by Git to avoid storing duplicate image data. The supplied PNG logo, hero background, and partner mark are used directly.
+Original Figma assets are stored in `public/images/figma/`, with their paths and export dimensions in `src/design-assets.js`. Photos are optimized as WebP; logos, artwork and SVG icons retain their exported formats. No temporary Figma asset URLs are needed at runtime. The build copies all image formats used by the pages, including SVG.
 
-The About hero reads every AVIF, JPG, JPEG, PNG, and WebP file in `public/images/about_hero/`, sorted by filename. Add or remove images there, then refresh the development page or run `npm run build` for a new static deployment. The animation uses duplicated image sequences to loop continuously and pauses for visitors who prefer reduced motion. The About group photo remains as a fallback if the manifest cannot load.
+The About hero uses the original Figma photo collage in duplicated sequences to loop continuously. The animation pauses for visitors who prefer reduced motion. The Community Hall of Fame includes all six design variants, with scroll, next-card and dot navigation.
 
-Interface icons use vendored [Lucide](https://lucide.dev/) SVGs; the team social marks come from [Simple Icons](https://simpleicons.org/). Team LinkedIn and X links currently lead to the platform homepages as requested placeholders; replace the two destinations in `src/main.js` with verified member profiles before launch.
+Figma exports supply the section icons. Navigation controls also use vendored [Lucide](https://lucide.dev/) SVGs; the team social marks come from [Simple Icons](https://simpleicons.org/). Team LinkedIn and X links currently lead to the platform homepages as requested placeholders; replace the two destinations in `src/main.js` with verified member profiles before launch.
 
-Photos without supplied assets on the Community, Events, and team sections remain temporary placeholders. The linked Figma file is viewable in the browser, but the Figma plugin's design context and asset download tools reported that the connected account needs editor access, so this implementation follows the user-supplied screenshots.
+Reference frames: Home desktop `1:3`, Home mobile `170:2`, About `213:183`, Community `440:583`, and Events `899:678`. The other pages adapt their desktop references to smaller screens. Repeated team portraits, partner logos, and event cards follow the repeated content in the design.
+
+The site uses a requested 80% visual scale, controlled by `--site-scale` in `src/style.css`. The Home event flyer uses the Figma crop with narrower side gutters. Partner logos use Figma's 221 × 116 image slots and staggered rows; the square source needs `object-fit: fill` to reproduce the design's proportions.
 
 ## Links pending from the team
 
