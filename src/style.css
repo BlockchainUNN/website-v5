@@ -102,25 +102,14 @@ header {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
   white-space: nowrap;
 }
-.brand svg {
-  height: 44px;
-  width: 44px;
-}
-.brand > span {
-  font-size: 19px;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.035em;
-}
-.brand small {
-  font-size: 7px;
-  display: block;
-  letter-spacing: 0.23em;
-  margin-top: 3px;
-  font-weight: 500;
+.brand img {
+  width: 225px;
+  height: 55px;
+  object-fit: cover;
+  object-position: center;
+  mix-blend-mode: screen;
 }
 .nav-wrap nav {
   margin-left: auto;
@@ -227,13 +216,7 @@ main {
 }
 .home-hero {
   min-height: 860px;
-  background: radial-gradient(
-    ellipse at 70% 40%,
-    #1c6228 0%,
-    #0d4809 40%,
-    #082b0a 72%,
-    #1e1e1e 100%
-  );
+  background: linear-gradient(180deg, #0b3b0bb8 0%, #0b3b0bad 58%, #1e1e1e 100%), url("/images/home/hero_bg.png") center 38% / cover no-repeat;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -241,20 +224,6 @@ main {
   padding: 270px 22px 160px;
   position: relative;
   overflow: hidden;
-}
-.home-hero:before {
-  content: "";
-  position: absolute;
-  width: 490px;
-  height: 490px;
-  left: 50%;
-  top: 255px;
-  transform: translateX(35%) rotate(-25deg);
-  opacity: 0.14;
-  background:
-    repeating-linear-gradient(0deg, #b6e4ab 0 1px, transparent 1px 9px),
-    repeating-linear-gradient(90deg, #b6e4ab 0 1px, transparent 1px 9px);
-  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
 }
 .home-hero:after {
   content: "";
@@ -590,18 +559,7 @@ main {
   background: #f7f7f7;
 }
 .event-banner img {
-  filter: saturate(0.5) brightness(1.25);
-}
-.event-banner span {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%) rotate(-5deg);
-  font-family: cursive;
-  font-style: italic;
-  font-size: clamp(80px, 13vw, 190px);
-  color: #06400b;
-  white-space: nowrap;
+  object-position: center 46%;
 }
 .partners {
   text-align: center;
@@ -622,23 +580,14 @@ main {
   justify-items: center;
   margin-top: 100px;
 }
-.partner-grid span:nth-child(n + 6) {
+.partner-grid img:nth-child(n + 6) {
   transform: translateX(55%);
 }
 .gida-logo {
-  font-size: 26px;
-  font-weight: 800;
-  color: #b5b5b5;
-  white-space: nowrap;
-}
-.gida-logo b {
-  color: #f3102d;
-  font-size: 30px;
-}
-.gida-logo small {
-  display: block;
-  font-size: 7px;
-  letter-spacing: 0.06em;
+  width: min(100%, 195px);
+  height: 70px;
+  object-fit: cover;
+  mix-blend-mode: screen;
 }
 .newsletter {
   text-align: center;
@@ -707,15 +656,9 @@ footer {
   justify-content: space-between;
   gap: 40px;
 }
-.footer-address .brand svg {
-  width: 75px;
-  height: 75px;
-}
-.footer-address .brand > span {
-  font-size: 31px;
-}
-.footer-address .brand small {
-  font-size: 11px;
+.footer-address .brand img {
+  width: 360px;
+  height: 90px;
 }
 .footer-address p {
   font-size: 16px;
@@ -1575,12 +1518,9 @@ dialog p {
   .nav-wrap nav {
     gap: 24px;
   }
-  .brand > span {
-    font-size: 16px;
-  }
-  .brand svg {
-    width: 37px;
-    height: 37px;
+  .brand img {
+    width: 185px;
+    height: 46px;
   }
   .momentum {
     gap: 40px;
@@ -1605,7 +1545,7 @@ dialog p {
   .partner-grid {
     grid-template-columns: repeat(3, 1fr);
   }
-  .partner-grid span:nth-child(n + 6) {
+  .partner-grid img:nth-child(n + 6) {
     transform: none;
   }
   .event-kinds p {
@@ -1625,15 +1565,9 @@ dialog p {
     padding: 9px 15px;
     border-radius: 35px;
   }
-  .nav-wrap .brand svg {
-    width: 26px;
-    height: 26px;
-  }
-  .nav-wrap .brand > span {
-    font-size: 11px;
-  }
-  .nav-wrap .brand small {
-    font-size: 4.3px;
+  .nav-wrap .brand img {
+    width: 140px;
+    height: 35px;
   }
   .nav-wrap .nav-join {
     display: none;
@@ -1704,11 +1638,6 @@ dialog p {
     min-width: 145px;
     padding: 12px;
     font-size: 13px;
-  }
-  .home-hero:before {
-    width: 300px;
-    height: 300px;
-    top: 330px;
   }
   .momentum {
     grid-template-columns: 1fr;
@@ -1828,9 +1757,6 @@ dialog p {
   .event-banner {
     height: 210px;
   }
-  .event-banner span {
-    font-size: 65px;
-  }
   .partners {
     padding-top: 65px;
     padding-bottom: 75px;
@@ -1850,13 +1776,8 @@ dialog p {
     margin-top: 45px;
   }
   .gida-logo {
-    font-size: 15px;
-  }
-  .gida-logo b {
-    font-size: 17px;
-  }
-  .gida-logo small {
-    font-size: 4px;
+    width: min(100%, 110px);
+    height: 42px;
   }
   .newsletter {
     padding: 40px 20px 65px;
@@ -1889,15 +1810,9 @@ dialog p {
   .footer-top {
     display: block;
   }
-  .footer-address .brand svg {
-    height: 43px;
-    width: 43px;
-  }
-  .footer-address .brand > span {
-    font-size: 17px;
-  }
-  .footer-address .brand small {
-    font-size: 6px;
+  .footer-address .brand img {
+    width: 240px;
+    height: 60px;
   }
   .footer-address p {
     font-size: 11px;

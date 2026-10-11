@@ -19,9 +19,9 @@ npm run build
 
 ## Assets
 
-The 13 images in the homepage community grid and the driving momentum photo are the user-supplied originals from `public/images/`. Optimized WebP versions are committed for fast page loads. The JPG source files remain in the workspace and are ignored by Git so the repository does not store about 180 MB of duplicate image data.
+Homepage images live in `public/images/home/`; the About page group photo lives in `public/images/about/`. Optimized WebP versions of the supplied JPGs are committed for fast page loads. The full-size JPG sources remain in the workspace and are ignored by Git to avoid storing duplicate image data. The supplied PNG logo, hero background, and partner mark are used directly.
 
-Other photos remain temporary placeholders until their original images are available. The linked Figma file is viewable in the browser, but the Figma plugin's design context and asset download tools reported that the connected account needs editor access, so this implementation follows the user-supplied screenshots.
+Photos without supplied assets on the Community, Events, and team sections remain temporary placeholders. The linked Figma file is viewable in the browser, but the Figma plugin's design context and asset download tools reported that the connected account needs editor access, so this implementation follows the user-supplied screenshots.
 
 ## Links pending from the team
 

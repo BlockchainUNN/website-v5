@@ -3,3 +3,4 @@ dist/
 .git-history/
 # User-supplied source photos are retained locally; optimized WebP assets ship.
 public/images/*.jpg
+public/images/**/*.jpg
