@@ -1,6 +1,7 @@
 import http from "node:http";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { listAboutHeroImages } from "./asset-manifest.js";
 const root = process.cwd();
 const port = Number(process.env.PORT || 3000);
 const types = {
@@ -9,6 +10,9 @@ const types = {
   ".js": "text/javascript",
   ".svg": "image/svg+xml",
   ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".png": "image/png",
+  ".avif": "image/avif",
   ".webp": "image/webp",
 };
 http
@@ -17,6 +21,14 @@ http
       const pathname = decodeURIComponent(
         new URL(req.url, "http://localhost").pathname,
       );
+      if (pathname === "/images/about_hero/manifest.json") {
+        const images = await listAboutHeroImages();
+        res.writeHead(200, {
+          "Content-Type": "application/json",
+          "Cache-Control": "no-store",
+        });
+        return res.end(JSON.stringify(images));
+      }
       const file = pathname.includes(".") ? pathname : "/index.html";
       const source = file.startsWith("/images/") ? "/public" + file : file;
       const resolved = path.resolve(root, "." + source);

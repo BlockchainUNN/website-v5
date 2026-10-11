@@ -1,5 +1,6 @@
-import { mkdir, cp, readdir, rm } from "node:fs/promises";
+import { mkdir, cp, readdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { listAboutHeroImages } from "./asset-manifest.js";
 
 await rm("dist", { recursive: true, force: true });
 await mkdir("dist/images", { recursive: true });
@@ -14,10 +15,15 @@ async function copyImages(source, destination) {
     if (entry.isDirectory()) {
       await mkdir(to, { recursive: true });
       await copyImages(from, to);
-    } else if (/\.(webp|png)$/i.test(entry.name)) {
+    } else if (/\.(webp|png)$/i.test(entry.name) ||
+      (source === "public/images/about_hero" && /\.(avif|jpe?g)$/i.test(entry.name))) {
       await cp(from, to);
     }
   }
 }
 await copyImages("public/images", "dist/images");
+await writeFile(
+  "dist/images/about_hero/manifest.json",
+  JSON.stringify(await listAboutHeroImages()),
+);
 console.log("Static site built in dist/");
