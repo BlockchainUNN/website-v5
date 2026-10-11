@@ -2,12 +2,14 @@ import http from "node:http";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 const root = process.cwd();
+const port = Number(process.env.PORT || 3000);
 const types = {
   ".html": "text/html",
   ".css": "text/css",
   ".js": "text/javascript",
   ".svg": "image/svg+xml",
   ".jpg": "image/jpeg",
+  ".webp": "image/webp",
 };
 http
   .createServer(async (req, res) => {
@@ -16,7 +18,8 @@ http
         new URL(req.url, "http://localhost").pathname,
       );
       const file = pathname.includes(".") ? pathname : "/index.html";
-      const resolved = path.resolve(root, "." + file);
+      const source = file.startsWith("/images/") ? "/public" + file : file;
+      const resolved = path.resolve(root, "." + source);
       if (!resolved.startsWith(root + path.sep)) {
         res.writeHead(403);
         return res.end();
@@ -31,6 +34,6 @@ http
       res.end("Not found");
     }
   })
-  .listen(Number(process.env.PORT || 3000), "0.0.0.0", () =>
-    console.log("Blockchain UNN → http://localhost:3000"),
+  .listen(port, "0.0.0.0", () =>
+    console.log(`Blockchain UNN → http://localhost:${port}`),
   );

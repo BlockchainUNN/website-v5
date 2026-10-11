@@ -1,38 +1,28 @@
-# Blockchain UNN
+# Blockchain UNN website
 
-A responsive, dependency-free community website built from the supplied Home, About, Community, and Events design references, with refined typography and lightweight interactions.
+A responsive implementation of the supplied Home, About, Community, and Events design screenshots. The project uses plain HTML, CSS, and JavaScript, with no runtime dependencies.
 
 ## Run
-
-Requires Node.js 20 or newer. No package installation needed.
 
 ```sh
 npm run dev
 ```
 
-Open http://localhost:3000. `PORT` overrides the default port.
+Open `http://localhost:3000`. You can choose another port with `PORT=3001 npm run dev`.
 
 ```sh
 npm run check
 npm run build
 ```
 
-Deploy `dist/` to a static host with all extensionless routes rewritten to `index.html` (Netlify configuration included). `server.js` is a local preview server, not a production application server.
+`dist/` is ready for a static host. Netlify route rewrites are included.
 
-## Routes and interactions
+## Assets
 
-- `/`: introduction, projects, upcoming event, partner area, newsletter preview.
-- `/about`: story, mission, vision, values, and team directory holding area.
-- `/community`: guilds, project details, and membership journey.
-- `/events`: upcoming conference and client-side archive filters.
-- Native accessible dialogs, focus return, Escape dismissal, mobile navigation, keyboard focus indicators, reduced-motion support, and one-time scroll reveals.
+The 13 images in the homepage community grid and the driving momentum photo are the user-supplied originals from `public/images/`. Optimized WebP versions are committed for fast page loads. The JPG source files remain in the workspace and are ignored by Git so the repository does not store about 180 MB of duplicate image data.
 
-## Before launch
+Other photos remain temporary placeholders until their original images are available. The linked Figma file is viewable in the browser, but the Figma plugin's design context and asset download tools reported that the connected account needs editor access, so this implementation follows the user-supplied screenshots.
 
-The linked GitHub repository was empty. The Figma connector denied file access; implementation uses the user-supplied screenshots and authorized design improvements.
+## Links pending from the team
 
-Images are remote Unsplash placeholders, not actual Blockchain UNN photographs. Replace them in `src/main.js` with approved local assets in `public/`. Google Fonts currently requires network access; self-host approved fonts for offline use.
-
-Replace the temporary geometric brand mark with the official logo. Verify community statistics, GIDA partnership, project descriptions, and event archive details. The team directory deliberately has no invented identities. Community invites, project demos, event registration, and contact email must be supplied before enabling their external actions. Newsletter currently validates email and explicitly explains that it does not store or submit it; connect a mailing service before launch.
-
-History was initially stored in `.git-history` because the workspace provided an empty read-only `.git` directory. If the regular Git metadata cannot be installed, inspect commits with `git --git-dir=.git-history --work-tree=. log`.
+Community invite, project URLs, conference registration, hackathon login, and contact address are pending. Their buttons currently explain this in a dialog. Newsletter submission does not store an email until a mailing service is connected. Verify the visible statistics, dates, names, and partner status before publication.
