@@ -1,0 +1,12 @@
+dist/
+.git-history/
+artifacts/
+.agents/
+.aws/
+.codex/
+public/images/home/*.jpg
+public/images/about/*.jpg
+README.md
+tests/
+netlify.toml
+server.js

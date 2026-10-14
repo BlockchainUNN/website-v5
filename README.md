@@ -15,7 +15,7 @@ npm run check
 npm run build
 ```
 
-`dist/` is ready for a static host. Netlify route rewrites are included.
+`dist/` is ready for a static host. Netlify and Vercel route rewrites are included; Vercel builds with `npm run build` and publishes `dist/`.
 
 ## Assets
 
