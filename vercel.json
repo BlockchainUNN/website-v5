@@ -5,6 +5,9 @@
   "rewrites": [
     { "source": "/about", "destination": "/index.html" },
     { "source": "/community", "destination": "/index.html" },
-    { "source": "/events", "destination": "/index.html" }
+    { "source": "/events", "destination": "/index.html" },
+    { "source": "/register", "destination": "/index.html" },
+    { "source": "/submit-project", "destination": "/index.html" },
+    { "source": "/admin/export", "destination": "/index.html" }
   ]
 }

@@ -7,7 +7,7 @@
     "dev": "node server.js",
     "start": "node server.js",
     "build": "node build.js",
-    "check": "node --check src/main.js && node --check server.js && node --check build.js && node --check api/register.js && node --check api/submit-project.js && node --check api/export.js && node --test tests/*.test.js"
+    "check": "node --check src/main.js && node --check src/forms.js && node --check server.js && node --check build.js && node --check api/register.js && node --check api/submit-project.js && node --check api/export.js && node --test tests/*.test.js"
   },
   "dependencies": {
     "@vercel/blob": "^2.8.2",

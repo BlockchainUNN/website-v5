@@ -1,6 +1,6 @@
 # Blockchain UNN website
 
-A responsive implementation of the Home, About, Community, and Events pages in [Blockchain UNN UI on Figma](https://www.figma.com/design/zs2LmP0VuyKC3rkuGc7TER/Blockchain-UNN-UI). The project uses plain HTML, CSS, and JavaScript, with no runtime dependencies.
+A responsive implementation of the Home, About, Community, and Events pages in [Blockchain UNN UI on Figma](https://www.figma.com/design/zs2LmP0VuyKC3rkuGc7TER/Blockchain-UNN-UI). The frontend uses plain HTML, CSS, and JavaScript. Small serverless functions handle event forms and Excel exports.
 
 ## Run
 
@@ -15,7 +15,24 @@ npm run check
 npm run build
 ```
 
-`dist/` is ready for a static host. Netlify and Vercel route rewrites are included; Vercel builds with `npm run build` and publishes `dist/`.
+`dist/` contains the static site. Vercel builds with `npm run build`, publishes `dist/`, and deploys the root `api/` folder as Functions. The local development server serves the same API routes.
+
+## Conference forms and Excel export
+
+- `/register` collects conference attendance. Choosing hackathon participation reveals the track, team (maximum three people), and project idea fields. Virtual-only attendees cannot choose the in-person hackathon.
+- `/submit-project` collects final team, project, and link details.
+- `/admin/export` downloads one `.xlsx` file with **Registrations** and **Final submissions** sheets after the organiser enters the export key. This page is not linked publicly.
+
+No database is used. Each response is saved as a separate immutable JSON object in a **private Vercel Blob store**. A single `.xlsx` file cannot be safely appended to by concurrent serverless requests, and files written inside a Vercel Function do not persist. Export generates the workbook from the saved objects. Local development saves test responses in ignored `.local-data/` instead.
+
+### Production setup
+
+1. In the linked Vercel project, create a **Private** Blob store under Storage and connect it to the Production environment. The project needs `BLOB_READ_WRITE_TOKEN` (or the supported Blob OIDC configuration). Never use a public Blob store for attendee details.
+2. Generate a long random organiser key (for example, `openssl rand -hex 32`) and set it as the Vercel environment variable `FORM_EXPORT_KEY`. Give the key only to organisers. It is required for the Excel download.
+3. To send automated registration confirmations, set `RESEND_API_KEY` and `CONFERENCE_FROM_EMAIL` (an address on a verified sending domain). Records still save if email is not configured or delivery fails; the success screen only claims an email was sent when the provider accepts it.
+4. Redeploy, submit one test registration and one test project, then download the workbook at `/admin/export` and check both sheets. Remove test records from the private store before opening registration to the public.
+
+The public endpoints validate inputs, use a honeypot field, and reject cross-origin browser submissions. Add a Vercel Firewall rate limit or challenge before promoting the forms for a large public campaign. Back up the exported workbook regularly and decide who may access or retain attendee contact details.
 
 ## Assets
 
@@ -31,4 +48,4 @@ The site uses a requested 80% visual scale, controlled by `--site-scale` in `src
 
 ## Links pending from the team
 
-Community invite, project URLs, conference registration, hackathon login, and contact address are pending. Their buttons currently explain this in a dialog. Newsletter submission does not store an email until a mailing service is connected. Verify the visible statistics, dates, names, and partner status before publication.
+Community invite, project URLs, and contact address are pending. Their buttons currently explain this in a dialog. Conference registration and project submission have dedicated forms, but production collection requires the private Blob store above. Newsletter submission does not store an email until a mailing service is connected. The current Conference 5.0 poster asset still says **October**, while the supplied registration details say **13–14 November**; replace that poster before public launch. Verify the visible statistics, names, event location, bounty terms, and partner status before publication.

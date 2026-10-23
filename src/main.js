@@ -1,5 +1,6 @@
 import { icon } from "./icons.js";
 import { designAssets } from "./design-assets.js";
+import { registrationPage, submissionPage, exportPage, initForms } from "./forms.js";
 
 const asset = (page, name) => designAssets[`${page}-${name}`].src;
 const designIcon = (page, name) => {
@@ -9,7 +10,7 @@ const designIcon = (page, name) => {
 const designPhoto = (page, name, alt, className = "") => `<img class="${className}" src="${asset(page, name)}" alt="${alt}" loading="${className.includes("hero-photo") ? "eager" : "lazy"}" decoding="async">`;
 
 const route = location.pathname.replace(/\/$/, "") || "/";
-document.title = ({ "/": "Home", "/about": "About", "/community": "Community", "/events": "Events" }[route] || "Home") + " | Blockchain UNN";
+document.title = ({ "/": "Home", "/about": "About", "/community": "Community", "/events": "Events", "/register": "Register", "/submit-project": "Submit Project", "/admin/export": "Export Responses" }[route] || "Home") + " | Blockchain UNN";
 const photoNames = {
   eduvault: "imgImg13221", poolfi: "imgImg13161", ecopay: "imgImg13111",
   blockchain_development: "imgBlockchainDev", crypto_education: "imgCryptoEdu",
@@ -58,7 +59,7 @@ const projectDetails = [
 ];
 const projectCards = () =>
   `<div class="project-grid">${projectDetails.map(([name, description, type, image], i) => `<button class="project-card reveal" data-project="${i}" aria-label="View ${name} project"><div class="project-photo">${photo(image, `${name} project team`)}<span>${designIcon("home", "imgSolarHashtagBroken")} ${type}</span></div><div class="project-info"><h3>${name}</h3><p>${description}</p><span class="project-link">View Project ${designIcon("home", "imgLsiconRightFilled")}</span></div></button>`).join("")}</div>`;
-const footer = `<footer><div class="footer-inner"><div class="footer-top"><div class="footer-address">${footerLogo}<p>Lion Science Park, Off Sullivan Chime<br> Drive, By Green House Gate, UNN,<br> Nsukka, Enugu state.</p></div><div class="footer-links"><h3>Quick Links</h3><div><a href="/">Home</a><button data-info="hackathon">Hackathon Login</button><a href="/community#hall-of-fame">Hall of Fame</a><a href="/about#team">Team</a><a href="/community">About Community</a><a href="/events">Events</a></div></div></div><div class="footer-bottom">2026 Blockchain UNN. All Rights Reserved</div></div></footer>`;
+const footer = `<footer><div class="footer-inner"><div class="footer-top"><div class="footer-address">${footerLogo}<p>Lion Science Park, Off Sullivan Chime<br> Drive, By Green House Gate, UNN,<br> Nsukka, Enugu state.</p></div><div class="footer-links"><h3>Quick Links</h3><div><a href="/">Home</a><a href="/submit-project">Project Submission</a><a href="/community#hall-of-fame">Hall of Fame</a><a href="/about#team">Team</a><a href="/community">About Community</a><a href="/events">Events</a></div></div></div><div class="footer-bottom">2026 Blockchain UNN. All Rights Reserved</div></div></footer>`;
 
 function home() {
   return `<section class="home-hero"><div class="hero-text"><h1>Building the Decentralized<br>  Future Together</h1><p>A student-led blockchain community where ideas turn<br>  into real-world projects, collaboration and impact</p><div class="hero-actions">${joinButton("Join Community", "white")}${action("View Events", "/events", "outline")}</div></div></section><div class="network-bg"><section class="momentum wrap reveal"><div class="momentum-photo"><div class="momentum-image">${designPhoto("home", "imgImg01171", "Blockchain UNN members at a Buildathon")}</div><span class="sticker sticker-top">${designIcon("home", "imgGroup")} innovation</span><span class="sticker sticker-bottom">${designIcon("home", "imgGroup1")} decentralized</span></div><div class="momentum-content"><h2>Driving momentum<br> in Web3........</h2><div class="stat-tiles"><div><strong>3000+</strong><span>Active Members</span></div><div><strong>40+</strong><span>Hackathons</span></div><div><strong>100+</strong><span>Projects built</span></div><div><strong>20+</strong><span>Partners</span></div><span class="mission-sticker">One Mission</span></div></div></section><section class="home-about wrap reveal">${pill("About B-UNN", "network")}<p>BlockchainUNN is a Tech community established with the aim of educating members of the university community with both basic and advanced practical knowledge of cryptocurrency, blockchain technology, its development, and its opportunities. Though we are focused on the University of Nigeria, we have a diverse community made up of people from diverse fields, institutions and campuses who are blockchain enthusiasts.</p><strong>The vision is to empower the next generation to shape the decentralized future</strong></section>${gallery}<section class="home-activities wrap">${heading("What we do", "Your journey starts here", "Here’s how you can get involved, build real skills, and grow in Web3", "target")}<div class="activity-window"><div class="activity-track" tabindex="0" role="region" aria-roledescription="carousel" aria-label="What we do">${[
@@ -264,7 +265,7 @@ const eventKinds = [
   ],
 ];
 function events() {
-  return `<section class="events-hero">${pill("EVENTS", "calendar-days")}<h1>Don’t miss out.<br> Something is always happening here.</h1><p>Meetups, workshops, hackathons and conferences — the full<br> line-up of what BlockchainUNN hosts through the year, plus<br> everything we’ve already run.</p></section><section class="event-kinds"><div class="wrap">${eventKinds.map(([iconName, title, copy], i) => `<article>${designIcon("events", ["imgFluentMdl2Education", "imgBiCodeSlash", "imgPhHandshakeThin", "imgGgCommunity"][i])}<h3>${title}</h3><p>${copy}</p></article>`).join("")}</div></section><section class="upcoming wrap"><span class="event-label">UPCOMING EVENTS</span><h2>What’s next on the calendar</h2><article class="upcoming-card"><div class="conference-poster">${designPhoto("events", "imgWhatsAppImage20260906At1012571", "Blockchain UNN Conference 5.0 — Intelligence Without Borders: AI & Web3")}</div><div><strong>BlockChainUNN Conference 5.0</strong><h3>INTELLIGENCE WITHOUT BORDERS: AI &amp; WEB3</h3><p>${designIcon("events", "imgCarbonLocation")} UNN, Nsukka</p><p>Our annual campus conference: keynote talks, protocol showcases, a recruiting floor and the Hall of Fame awards.</p></div><button data-rsvp>RSVP</button></article></section><section class="past-events wrap"><span class="event-label">PAST EVENTS</span><h2>A Look Back at Our Events</h2><div class="past-grid">${Array.from(
+  return `<section class="events-hero">${pill("EVENTS", "calendar-days")}<h1>Don’t miss out.<br> Something is always happening here.</h1><p>Meetups, workshops, hackathons and conferences — the full<br> line-up of what BlockchainUNN hosts through the year, plus<br> everything we’ve already run.</p></section><section class="event-kinds"><div class="wrap">${eventKinds.map(([iconName, title, copy], i) => `<article>${designIcon("events", ["imgFluentMdl2Education", "imgBiCodeSlash", "imgPhHandshakeThin", "imgGgCommunity"][i])}<h3>${title}</h3><p>${copy}</p></article>`).join("")}</div></section><section class="upcoming wrap"><span class="event-label">UPCOMING EVENTS</span><h2>What’s next on the calendar</h2><article class="upcoming-card"><div class="conference-poster">${designPhoto("events", "imgWhatsAppImage20260906At1012571", "Blockchain UNN Conference 5.0 — Intelligence Without Borders: AI & Web3")}</div><div><strong>BlockChainUNN Conference 5.0</strong><h3>INTELLIGENCE WITHOUT BORDERS: AI &amp; WEB3</h3><p>${designIcon("events", "imgCarbonLocation")} Nsukka BlockHive · 13–14 November</p><p>Our annual campus conference: keynote talks, protocol showcases, a recruiting floor and the Hall of Fame awards.</p></div><button data-rsvp>Register</button></article><div class="event-secondary-link"><span>Already taking part in the hackathon?</span><a href="/submit-project">Submit your project ${icon("arrow-right")}</a></div></section><section class="past-events wrap"><span class="event-label">PAST EVENTS</span><h2>A Look Back at Our Events</h2><div class="past-grid">${Array.from(
     { length: 4 },
     (_, i) => {
       const pizza = i % 2 === 0;
@@ -276,7 +277,7 @@ function events() {
 }
 
 const page =
-  { "/": home, "/about": about, "/community": community, "/events": events }[
+  { "/": home, "/about": about, "/community": community, "/events": events, "/register": registrationPage, "/submit-project": submissionPage, "/admin/export": exportPage }[
     route
   ] || home;
 document.querySelector("#app").innerHTML =
@@ -317,6 +318,7 @@ function hydrateAboutHero() {
   collage.innerHTML = `<div class="about-hero-track">${sequence}${sequence}</div>`;
 }
 hydrateAboutHero();
+initForms();
 
 const dialog = document.querySelector("dialog");
 let activityTargetIndex = 0;
@@ -349,20 +351,11 @@ document.addEventListener("click", (event) => {
       projectDetails[Number(button.dataset.project)][0],
       "A project link has not yet been supplied. The project card is ready for the team’s URL.",
     );
-  if (button.matches("[data-rsvp]"))
-    showDialog(
-      "Conference 5.0",
-      "The registration link has not yet been supplied. Add the official RSVP destination before launch.",
-    );
+  if (button.matches("[data-rsvp]")) location.assign("/register");
   if (button.matches("[data-contact]"))
     showDialog(
       "Get in Touch",
       "The team’s contact address has not yet been supplied. Add the verified email or contact form before launch.",
-    );
-  if (button.matches("[data-info]"))
-    showDialog(
-      "Hackathon Login",
-      "The official hackathon login destination has not yet been supplied.",
     );
   if (button.matches(".dialog-close")) dialog.close();
   if (button.matches("[data-carousel]"))
