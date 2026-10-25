@@ -6,5 +6,6 @@ dist/
 public/images/home/*.jpg
 public/images/about/*.jpg
 .env*
+!.env.example
 .local-data/
 .vercel

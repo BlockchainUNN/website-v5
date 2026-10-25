@@ -1,6 +1,6 @@
 # Blockchain UNN website
 
-A responsive implementation of the Home, About, Community, and Events pages in [Blockchain UNN UI on Figma](https://www.figma.com/design/zs2LmP0VuyKC3rkuGc7TER/Blockchain-UNN-UI). The frontend uses plain HTML, CSS, and JavaScript. Small serverless functions handle event forms and Excel exports.
+A responsive implementation of the Home, About, Community, and Events pages in [Blockchain UNN UI on Figma](https://www.figma.com/design/zs2LmP0VuyKC3rkuGc7TER/Blockchain-UNN-UI). The frontend uses plain HTML, CSS, and JavaScript. Small Node handlers serve the event forms and Excel exports, and can run on Vercel or on the VPS.
 
 ## Run
 
@@ -15,7 +15,9 @@ npm run check
 npm run build
 ```
 
-`dist/` contains the static site. Vercel builds with `npm run build`, publishes `dist/`, and deploys the root `api/` folder as Functions. The local development server serves the same API routes.
+`dist/` contains the static site. Vercel builds with `npm run build` and publishes `dist/`; the root `api/` folder can also be deployed as Vercel Functions. The local development server serves the same API routes. `npm run api` starts only the API on `127.0.0.1:8001`.
+
+Copy `.env.example` to `.env` for local development. `DATABASE_URL` enables Postgres; without it, the handlers fall back to Vercel Blob (when configured) or ignored `.local-data/` files.
 
 ## Conference forms and Excel export
 
@@ -23,16 +25,40 @@ npm run build
 - `/submit-project` collects final team, project, and link details.
 - `/admin/export` downloads one `.xlsx` file with **Registrations** and **Final submissions** sheets after the organiser enters the export key. This page is not linked publicly.
 
-No database is used. Each response is saved as a separate immutable JSON object in a **private Vercel Blob store**. A single `.xlsx` file cannot be safely appended to by concurrent serverless requests, and files written inside a Vercel Function do not persist. Export generates the workbook from the saved objects. Local development saves test responses in ignored `.local-data/` instead.
+Responses are stored in **PostgreSQL** in the `registrations` and `submissions` tables (`db/schema.sql`). Export reads those rows and generates one workbook. If `DATABASE_URL` is absent, the handlers fall back to a private Vercel Blob store when `BLOB_READ_WRITE_TOKEN` or `BLOB_STORE_ID` is set, and to ignored `.local-data/` files for local development.
 
-### Production setup
+### Database
 
-1. In the linked Vercel project, create a **Private** Blob store under Storage and connect it to the Production environment. The project needs `BLOB_READ_WRITE_TOKEN` (or the supported Blob OIDC configuration). Never use a public Blob store for attendee details.
-2. Generate a long random organiser key (for example, `openssl rand -hex 32`) and set it as the Vercel environment variable `FORM_EXPORT_KEY`. Give the key only to organisers. It is required for the Excel download.
-3. To send automated registration confirmations, set `RESEND_API_KEY` and `CONFERENCE_FROM_EMAIL` (an address on a verified sending domain). Records still save if email is not configured or delivery fails; the success screen only claims an email was sent when the provider accepts it.
-4. Redeploy, submit one test registration and one test project, then download the workbook at `/admin/export` and check both sheets. Remove test records from the private store before opening registration to the public.
+```sh
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f db/schema.sql
+```
 
-The public endpoints validate inputs, use a honeypot field, and reject cross-origin browser submissions. Add a Vercel Firewall rate limit or challenge before promoting the forms for a large public campaign. Back up the exported workbook regularly and decide who may access or retain attendee contact details.
+The application role only needs `SELECT`, `INSERT`, and `UPDATE` on the two tables. Keep the database on a private interface when the API runs on the same host.
+
+### VPS deployment
+
+The v5 API runs as the PM2 process `blockathon-api` from `/root/website-v5`, listening on `127.0.0.1:8001`. Nginx proxies `/api/register`, `/api/submit-project`, `/api/export`, and `/health` from `api.blockchainunn.org` to that port; every other path continues to the legacy v3 backend on port 8000.
+
+```sh
+cd /root/website-v5
+git pull
+npm ci --omit=dev
+pm2 restart blockathon-api
+```
+
+Keep production values in `/root/website-v5/.env` (mode 600), never in git:
+
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | Postgres connection string |
+| `DATABASE_POOL_MAX` | Pool size per process (default `3`) |
+| `ALLOWED_ORIGINS` | Comma-separated browser origins allowed to call the API |
+| `FORM_EXPORT_KEY` | Required for `/api/export`; generate with `openssl rand -hex 32` |
+| `RESEND_API_KEY` | Optional registration confirmation emails |
+| `CONFERENCE_FROM_EMAIL` | Verified sender address for Resend |
+| `IP_HASH_SALT` | Optional salt for hashing client IPs; leave empty to skip |
+
+The public endpoints validate inputs, use a hidden honeypot field, and reject cross-origin browser submissions. Add rate limiting or a challenge before promoting the forms for a large public campaign. Back up the database and exported workbook regularly, and decide who may access or retain attendee contact details.
 
 ## Assets
 

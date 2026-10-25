@@ -32,6 +32,11 @@ test("hackathon registration requires physical attendance, a track, and no more 
   assert.throws(() => validateRegistration({ ...building, team: Array(4).fill(building.team[0]) }), FormError);
 });
 
+test("honeypot is hidden from autofill and only rejects the dedicated field", () => {
+  assert.throws(() => validateRegistration({ ...validRegistration, bunn_hp: "spam" }), FormError);
+  assert.equal(validateRegistration({ ...validRegistration, website: "https://not-the-honeypot.example" }).firstName, "Ada");
+});
+
 test("final submission validates required links and optional links", () => {
   assert.equal(validateSubmission(validSubmission).demoUrl, "");
   assert.throws(() => validateSubmission({ ...validSubmission, pitchDeckUrl: "javascript:alert(1)" }), FormError);
