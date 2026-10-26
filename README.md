@@ -37,7 +37,7 @@ The application role only needs `SELECT`, `INSERT`, and `UPDATE` on the two tabl
 
 ### VPS deployment
 
-The v5 API runs as the PM2 process `blockathon-api` from `/root/website-v5`, listening on `127.0.0.1:8001`. Nginx proxies `/api/register`, `/api/submit-project`, `/api/export`, and `/health` from `api.blockchainunn.org` to that port; every other path continues to the legacy v3 backend on port 8000.
+The v5 API runs as the PM2 process `blockathon-api` from `/root/website-v5`, listening on `127.0.0.1:8001`. Nginx serves it over HTTPS at `https://v5-api.blockchainunn.org`. The main site on Vercel proxies `/api/*` to that host through `vercel.json`, so the frontend keeps its own domain. The legacy v3 backend stays on port 8000.
 
 ```sh
 cd /root/website-v5
