@@ -5,6 +5,8 @@ const routes = {
   "/api/register": "./api/register.js",
   "/api/submit-project": "./api/submit-project.js",
   "/api/export": "./api/export.js",
+  "/api/admin/registrations": "./api/admin-registrations.js",
+  "/api/admin/submissions": "./api/admin-submissions.js",
 };
 const port = Number(process.env.API_PORT || 8001);
 const allowedOrigins = new Set(
@@ -20,7 +22,7 @@ function corsHeaders(request) {
   return {
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Max-Age": "86400",
     Vary: "Origin",
   };

@@ -23,7 +23,7 @@ Copy `.env.example` to `.env` for local development. `DATABASE_URL` enables Post
 
 - `/register` collects conference attendance. Choosing hackathon participation reveals the track, team (maximum three people), and project idea fields. Virtual-only attendees cannot choose the in-person hackathon.
 - `/submit-project` collects final team, project, and link details.
-- `/admin/export` downloads one `.xlsx` file with **Registrations** and **Final submissions** sheets after the organiser enters the export key. This page is not linked publicly.
+- `/admin` (also `/admin/export`) is the organiser view. It asks for the organiser key, lists registrations and project submissions, and downloads one `.xlsx` file with **Registrations** and **Final submissions** sheets. It is not linked publicly.
 
 Responses are stored in **PostgreSQL** in the `registrations` and `submissions` tables (`db/schema.sql`). Export reads those rows and generates one workbook. If `DATABASE_URL` is absent, the handlers fall back to a private Vercel Blob store when `BLOB_READ_WRITE_TOKEN` or `BLOB_STORE_ID` is set, and to ignored `.local-data/` files for local development.
 
@@ -74,4 +74,4 @@ The site uses a requested 80% visual scale, controlled by `--site-scale` in `src
 
 ## Links pending from the team
 
-Community invite, project URLs, and contact address are pending. Their buttons currently explain this in a dialog. Conference registration and project submission have dedicated forms, but production collection requires the private Blob store above. Newsletter submission does not store an email until a mailing service is connected. The current Conference 5.0 poster asset still says **October**, while the supplied registration details say **13–14 November**; replace that poster before public launch. Verify the visible statistics, names, event location, bounty terms, and partner status before publication.
+Project URLs and the contact address are still pending; their buttons currently explain this in a dialog. The Join Community buttons open the community Google Form. Conference registration and project submission have dedicated forms, but production collection requires the private Blob store above. Newsletter submission does not store an email until a mailing service is connected. The current Conference 5.0 poster asset still says **October**, while the supplied registration details say **13–14 November**; replace that poster before public launch. Verify the visible statistics, names, event location, bounty terms, and partner status before publication.

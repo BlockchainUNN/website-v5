@@ -16,8 +16,8 @@ export function submissionPage() {
   return `<div class="forms-page"><div class="forms-shell"><a class="form-back" href="/events">${icon("arrow-left")} Back to events</a>${formIntro("CONFERENCE 5.0 HACKATHON · FINAL SUBMISSION", "Submit your project", "Show us what your team built during the hackathon. Submit the work you have, even if it is still in progress.")}<div class="submission-note">${icon("lightbulb")}<p><strong>Builders, submit what you have.</strong> Your project does not need to be 100% finished or bug-free. What matters is what you built during the hackathon.</p></div><form id="project-form" class="event-form submission-form"><div class="form-section-heading"><span>01 / 03</span><div><h2>Your team</h2><p>Tell us who is behind the project.</p></div></div><div class="form-grid">${field("Team name", "teamName", "text", { max: 120 })}${field("Team leader name", "leaderName", "text", { max: 120, autocomplete: "name" })}${field("Team leader email", "leaderEmail", "email", { max: 254, autocomplete: "email" })}${field("Other team members (names and X handles)", "otherMembers", "text", { wide: true, optional: true, multiline: true, rows: 3, max: 1000 })}</div><div class="form-section-heading"><span>02 / 03</span><div><h2>Your project</h2><p>Explain what it does and why it matters.</p></div></div><div class="form-grid">${field("Project name", "projectName", "text", { max: 120 })}${field("Project one-liner", "oneLiner", "text", { wide: true, max: 240, placeholder: "Describe your project in one sentence" })}${field("Project description", "description", "text", { wide: true, multiline: true, rows: 5, max: 3000, placeholder: "What problem does it solve, and how does it work?" })}</div><div class="form-section-heading"><span>03 / 03</span><div><h2>Project links</h2><p>Share links that reviewers can open without requesting access. A demo video is optional but recommended.</p></div></div><div class="form-grid">${field("Pitch deck link (Google Slides, Canva or PDF)", "pitchDeckUrl", "url", { wide: true, max: 2000, placeholder: "https://…" })}${field("Codebase / GitHub repo", "codeUrl", "url", { wide: true, max: 2000, placeholder: "https://github.com/…" })}${field("Demo video link", "demoUrl", "url", { wide: true, optional: true, max: 2000, placeholder: "https://…" })}${field("Live / deployment link", "liveUrl", "url", { wide: true, optional: true, max: 2000, placeholder: "https://…" })}</div><div class="form-honeypot" hidden aria-hidden="true"><label>Leave this field empty<input name="bunn_hp" tabindex="-1" autocomplete="off"></label></div><div class="form-submit-row"><p>Check that your pitch deck and codebase links are accessible to reviewers.</p><button type="submit" class="form-submit">Submit project ${icon("arrow-right")}</button></div><p class="form-message" role="alert" aria-live="polite"></p></form></div></div>`;
 }
 
-export function exportPage() {
-  return `<div class="forms-page"><div class="forms-shell export-shell"><a class="form-back" href="/events">${icon("arrow-left")} Back to events</a>${formIntro("ORGANISER ACCESS", "Download form responses", "Enter the export key to download registrations and final submissions in one Excel workbook.")}<form id="export-form" class="event-form"><label class="form-field"><span>Export key</span><input name="key" type="password" autocomplete="off" required></label><div class="form-submit-row"><p>The key is never saved in your browser.</p><button type="submit" class="form-submit">Download Excel ${icon("arrow-right")}</button></div><p class="form-message" role="alert" aria-live="polite"></p></form></div></div>`;
+export function adminPage() {
+  return `<div class="forms-page"><div class="forms-shell admin-shell"><a class="form-back" href="/events">${icon("arrow-left")} Back to events</a>${formIntro("ORGANISER ACCESS", "Form responses", "Enter the organiser key to view registrations and project submissions, or download the Excel workbook.")}<form id="admin-gate" class="event-form admin-gate"><label class="form-field"><span>Organiser key</span><input name="key" type="password" autocomplete="current-password" required></label><div class="form-submit-row"><p>The key is kept in this browser tab only.</p><button type="submit" class="form-submit">Unlock ${icon("arrow-right")}</button></div><p class="form-message" role="alert" aria-live="polite"></p></form><section id="admin-panel" hidden><div class="admin-toolbar"><div><span class="form-eyebrow">CONFERENCE 5.0</span><h2>Responses</h2><p class="admin-updated" data-admin-updated></p></div><div class="admin-actions"><button type="button" class="admin-button" data-admin-refresh>Refresh</button><button type="button" class="admin-button admin-button-primary" data-admin-export>Download Excel</button><button type="button" class="admin-button" data-admin-lock>Lock</button></div></div><p class="admin-status" role="status" aria-live="polite"></p><div class="admin-summary"><div><strong data-admin-count="registrations">0</strong><span>Registrations</span></div><div><strong data-admin-count="submissions">0</strong><span>Project submissions</span></div><div><strong data-admin-count="hackathon">0</strong><span>Hackathon teams</span></div></div><section class="admin-section"><div class="admin-section-head"><h3>Registrations</h3><input type="search" data-admin-search="registrations" placeholder="Search name, email, phone…" aria-label="Search registrations"></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Submitted</th><th>Name</th><th>Email</th><th>Phone / WhatsApp</th><th>Attendance</th><th>Hackathon</th><th>Team</th><th>Project idea</th></tr></thead><tbody data-admin-table="registrations"></tbody></table></div></section><section class="admin-section"><div class="admin-section-head"><h3>Final submissions</h3><input type="search" data-admin-search="submissions" placeholder="Search team, project, email…" aria-label="Search submissions"></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Submitted</th><th>Team</th><th>Leader</th><th>Other members</th><th>Project</th><th>One-liner</th><th>Description</th><th>Links</th></tr></thead><tbody data-admin-table="submissions"></tbody></table></div></section></section></div></div>`;
 }
 
 function value(form, name) { return form.elements.namedItem(name)?.value?.trim() || ""; }
@@ -90,32 +90,160 @@ export function initForms() {
     bindForm(registration, "/api/register", collectRegistration);
   }
   bindForm(document.querySelector("#project-form"), "/api/submit-project", collectSubmission);
-  document.querySelector("#export-form")?.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const button = form.querySelector('button[type="submit"]');
-    const message = form.querySelector(".form-message");
-    button.disabled = true;
-    message.textContent = "Preparing the Excel file…";
-    message.dataset.state = "pending";
+  initAdmin();
+}
+
+const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
+
+const formatDate = (value) => {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? escapeHtml(value || "") : escapeHtml(date.toLocaleString());
+};
+
+const safeLink = (url, label) => /^https?:\/\//i.test(String(url || ""))
+  ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`
+  : "";
+
+const memberLine = (member) => `${escapeHtml(member.name || "")}${member.email ? ` (${escapeHtml(member.email)})` : ""}${member.xHandle ? ` ${escapeHtml(member.xHandle)}` : ""}`;
+
+const registrationRow = (row) => `<tr><td class="admin-date">${formatDate(row.submittedAt)}</td><td>${escapeHtml(`${row.firstName || ""} ${row.lastName || ""}`.trim())}</td><td>${escapeHtml(row.email)}</td><td>${escapeHtml(row.phone)}</td><td>${escapeHtml(row.attendance === "virtual" ? "Virtual" : "Physical")}</td><td>${row.hackathon === "yes" ? `Yes${row.track ? ` — ${escapeHtml(row.track)}` : ""}` : "No"}</td><td>${Array.isArray(row.team) && row.team.length ? row.team.map(memberLine).join("<br>") : "—"}</td><td class="admin-wide">${escapeHtml(row.idea) || "—"}</td></tr>`;
+
+const submissionRow = (row) => `<tr><td class="admin-date">${formatDate(row.submittedAt)}</td><td>${escapeHtml(row.teamName)}</td><td>${escapeHtml(row.leaderName)}<br><small>${escapeHtml(row.leaderEmail)}</small></td><td>${escapeHtml(row.otherMembers) || "—"}</td><td>${escapeHtml(row.projectName)}</td><td>${escapeHtml(row.oneLiner)}</td><td class="admin-wide">${escapeHtml(row.description)}</td><td>${[safeLink(row.pitchDeckUrl, "Deck"), safeLink(row.codeUrl, "Code"), safeLink(row.demoUrl, "Demo"), safeLink(row.liveUrl, "Live")].filter(Boolean).join(" · ") || "—"}</td></tr>`;
+
+function initAdmin() {
+  const gate = document.querySelector("#admin-gate");
+  if (!gate) return;
+  const panel = document.querySelector("#admin-panel");
+  const keyInput = gate.elements.namedItem("key");
+  const gateMessage = gate.querySelector(".form-message");
+  const status = document.querySelector(".admin-status");
+  const updated = document.querySelector("[data-admin-updated]");
+  const tableBodies = {
+    registrations: document.querySelector('[data-admin-table="registrations"]'),
+    submissions: document.querySelector('[data-admin-table="submissions"]'),
+  };
+  const searchInputs = [...document.querySelectorAll("[data-admin-search]")];
+  const exportButton = document.querySelector("[data-admin-export]");
+  const refreshButton = document.querySelector("[data-admin-refresh]");
+  const lockButton = document.querySelector("[data-admin-lock]");
+  const meta = document.createElement("meta");
+  meta.name = "robots";
+  meta.content = "noindex, nofollow";
+  document.head.append(meta);
+
+  const storageKey = "bunn.admin.key";
+  let key = "";
+  let data = { registrations: [], submissions: [] };
+
+  function render(kind) {
+    const rows = data[kind] || [];
+    const query = (document.querySelector(`[data-admin-search="${kind}"]`)?.value || "").trim().toLowerCase();
+    const visible = query ? rows.filter((row) => JSON.stringify(row).toLowerCase().includes(query)) : rows;
+    const empty = kind === "registrations" ? "No registrations yet." : "No project submissions yet.";
+    tableBodies[kind].innerHTML = visible.length
+      ? visible.map(kind === "registrations" ? registrationRow : submissionRow).join("")
+      : `<tr><td colspan="8" class="admin-empty">${query ? "No matching records." : empty}</td></tr>`;
+  }
+
+  function renderAll() {
+    render("registrations");
+    render("submissions");
+    document.querySelector('[data-admin-count="registrations"]').textContent = data.registrations.length;
+    document.querySelector('[data-admin-count="submissions"]').textContent = data.submissions.length;
+    document.querySelector('[data-admin-count="hackathon"]').textContent = data.registrations.filter((row) => row.hackathon === "yes").length;
+    updated.textContent = `Updated ${new Date().toLocaleString()}`;
+  }
+
+  async function load(nextKey, quiet = false) {
+    if (!quiet) status.textContent = "Loading responses…";
+    const headers = { Authorization: `Bearer ${nextKey}` };
+    const [registrationsResponse, submissionsResponse] = await Promise.all([
+      fetch("/api/admin/registrations", { headers, cache: "no-store" }),
+      fetch("/api/admin/submissions", { headers, cache: "no-store" }),
+    ]);
+    if (registrationsResponse.status === 401 || submissionsResponse.status === 401) throw new Error("Invalid organiser key.");
+    if (!registrationsResponse.ok || !submissionsResponse.ok) throw new Error("Could not load the responses. Try again.");
+    const [registrationsBody, submissionsBody] = await Promise.all([registrationsResponse.json(), submissionsResponse.json()]);
+    key = nextKey;
+    data = { registrations: registrationsBody.registrations || [], submissions: submissionsBody.submissions || [] };
+    sessionStorage.setItem(storageKey, key);
+    gate.hidden = true;
+    panel.hidden = false;
+    gateMessage.textContent = "";
+    status.textContent = "";
+    renderAll();
+  }
+
+  async function attempt(nextKey, quiet = false) {
+    if (!quiet) {
+      gateMessage.textContent = "Checking key…";
+      gateMessage.dataset.state = "pending";
+    }
     try {
-      const response = await fetch("/api/export", { method: "POST", headers: { Authorization: `Bearer ${value(form, "key")}` } });
-      if (!response.ok) throw new Error((await response.json()).error || "Export failed.");
-      const file = await response.blob();
-      const href = URL.createObjectURL(file);
+      await load(nextKey);
+    } catch (error) {
+      sessionStorage.removeItem(storageKey);
+      key = "";
+      gate.hidden = false;
+      panel.hidden = true;
+      if (!quiet) {
+        gateMessage.textContent = error.message;
+        gateMessage.dataset.state = "error";
+      }
+    }
+  }
+
+  gate.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const nextKey = keyInput.value.trim();
+    if (nextKey) attempt(nextKey);
+  });
+  for (const input of searchInputs) input.addEventListener("input", () => render(input.dataset.adminSearch));
+
+  refreshButton.addEventListener("click", async () => {
+    if (!key) return;
+    refreshButton.disabled = true;
+    status.textContent = "Refreshing…";
+    try { await load(key, true); }
+    catch (error) { status.textContent = error.message; }
+    finally { refreshButton.disabled = false; }
+  });
+
+  lockButton.addEventListener("click", () => {
+    key = "";
+    data = { registrations: [], submissions: [] };
+    sessionStorage.removeItem(storageKey);
+    gate.hidden = false;
+    panel.hidden = true;
+    gate.reset();
+    gateMessage.textContent = "";
+    keyInput.focus();
+  });
+
+  exportButton.addEventListener("click", async () => {
+    if (!key) return;
+    exportButton.disabled = true;
+    status.textContent = "Preparing the Excel file…";
+    try {
+      const response = await fetch("/api/export", { method: "POST", headers: { Authorization: `Bearer ${key}` } });
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        throw new Error(body.error || "Export failed.");
+      }
+      const url = URL.createObjectURL(await response.blob());
       const link = document.createElement("a");
-      link.href = href;
+      link.href = url;
       link.download = `blockchain-unn-forms-${new Date().toISOString().slice(0, 10)}.xlsx`;
       link.click();
-      setTimeout(() => URL.revokeObjectURL(href), 60_000);
-      form.reset();
-      message.textContent = "Excel file downloaded.";
-      message.dataset.state = "success";
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      status.textContent = "Excel file downloaded.";
     } catch (error) {
-      message.textContent = error.message;
-      message.dataset.state = "error";
+      status.textContent = error.message;
     } finally {
-      button.disabled = false;
+      exportButton.disabled = false;
     }
   });
+
+  const saved = sessionStorage.getItem(storageKey);
+  if (saved) attempt(saved, true);
 }

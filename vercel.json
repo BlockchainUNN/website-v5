@@ -5,6 +5,7 @@
   "outputDirectory": "dist",
   "rewrites": [
     { "source": "/api/:path*", "destination": "https://v5-api.blockchainunn.org/api/:path*" },
+    { "source": "/admin", "destination": "/index.html" },
     { "source": "/about", "destination": "/index.html" },
     { "source": "/community", "destination": "/index.html" },
     { "source": "/events", "destination": "/index.html" },

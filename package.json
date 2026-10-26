@@ -9,7 +9,7 @@
     "api": "node --env-file-if-exists=.env server-api.js",
     "build": "node build.js",
     "db:setup": "psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -f db/schema.sql",
-    "check": "node --check src/main.js && node --check src/forms.js && node --check server.js && node --check server-api.js && node --check build.js && node --check lib/load-env.js && node --check lib/form-api.js && node --check lib/form-storage.js && node --check api/register.js && node --check api/submit-project.js && node --check api/export.js && node --test tests/*.test.js"
+    "check": "node --check src/main.js && node --check src/forms.js && node --check server.js && node --check server-api.js && node --check build.js && node --check lib/load-env.js && node --check lib/admin-auth.js && node --check lib/form-api.js && node --check lib/form-storage.js && node --check api/register.js && node --check api/submit-project.js && node --check api/export.js && node --check api/admin-registrations.js && node --check api/admin-submissions.js && node --test tests/*.test.js"
   },
   "dependencies": {
     "@vercel/blob": "^2.8.2",

@@ -1,6 +1,6 @@
 import { icon } from "./icons.js";
 import { designAssets } from "./design-assets.js";
-import { registrationPage, submissionPage, exportPage, initForms } from "./forms.js";
+import { registrationPage, submissionPage, adminPage, initForms } from "./forms.js";
 
 const asset = (page, name) => designAssets[`${page}-${name}`].src;
 const designIcon = (page, name) => {
@@ -10,7 +10,7 @@ const designIcon = (page, name) => {
 const designPhoto = (page, name, alt, className = "") => `<img class="${className}" src="${asset(page, name)}" alt="${alt}" loading="${className.includes("hero-photo") ? "eager" : "lazy"}" decoding="async">`;
 
 const route = location.pathname.replace(/\/$/, "") || "/";
-document.title = ({ "/": "Home", "/about": "About", "/community": "Community", "/events": "Events", "/register": "Register", "/submit-project": "Submit Project", "/admin/export": "Export Responses" }[route] || "Home") + " | Blockchain UNN";
+document.title = ({ "/": "Home", "/about": "About", "/community": "Community", "/events": "Events", "/register": "Register", "/submit-project": "Submit Project", "/admin": "Admin", "/admin/export": "Admin" }[route] || "Home") + " | Blockchain UNN";
 const photoNames = {
   eduvault: "imgImg13221", poolfi: "imgImg13161", ecopay: "imgImg13111",
   blockchain_development: "imgBlockchainDev", crypto_education: "imgCryptoEdu",
@@ -24,8 +24,9 @@ const pill = (text, iconName = "sparkles") =>
   `<span class="section-pill">${pillIcons[text] ? designIcon(...pillIcons[text]) : icon(iconName)} ${text}</span>`;
 const action = (text, target, className = "") =>
   `<a class="action ${className}" href="${target}">${text}${icon("arrow-right")}</a>`;
+const communityForm = "https://docs.google.com/forms/d/e/1FAIpQLScMcjJOPWRYRnY8dofAimFZxbFZEHeDAeOi5FJufJk0hHQ2ow/viewform?usp=header";
 const joinButton = (text = "Join Community", className = "") =>
-  `<button class="action ${className}" data-join>${text}${className.includes("nav-join") ? designIcon("home", "imgAkarIconsArrowRight") : icon("arrow-right")}</button>`;
+  `<a class="action ${className}" href="${communityForm}" target="_blank" rel="noopener noreferrer">${text}${className.includes("nav-join") ? designIcon("home", "imgAkarIconsArrowRight") : icon("arrow-right")}</a>`;
 const heading = (badge, title, subtitle = "", iconName = "sparkles") =>
   `<div class="center-heading reveal">${pill(badge, iconName)}<h2>${title}</h2>${subtitle ? `<p>${subtitle}</p>` : ""}</div>`;
 const network = `<div class="network-art" role="img" aria-label="A connected blockchain network"></div>`;
@@ -277,7 +278,7 @@ function events() {
 }
 
 const page =
-  { "/": home, "/about": about, "/community": community, "/events": events, "/register": registrationPage, "/submit-project": submissionPage, "/admin/export": exportPage }[
+  { "/": home, "/about": about, "/community": community, "/events": events, "/register": registrationPage, "/submit-project": submissionPage, "/admin": adminPage, "/admin/export": adminPage }[
     route
   ] || home;
 document.querySelector("#app").innerHTML =
@@ -341,11 +342,6 @@ document.addEventListener("click", (event) => {
     header.classList.toggle("menu-open", open);
     header.classList.remove("is-hidden");
   }
-  if (button.matches("[data-join]"))
-    showDialog(
-      "Join the Community",
-      "The official community invite has not yet been supplied. This button is ready to connect once the team provides its destination.",
-    );
   if (button.matches("[data-project]"))
     showDialog(
       projectDetails[Number(button.dataset.project)][0],

@@ -49,19 +49,36 @@ test("records are saved and only an authorised export returns a real two-sheet w
   const oldExportKey = process.env.FORM_EXPORT_KEY;
   const oldBlobToken = process.env.BLOB_READ_WRITE_TOKEN;
   const oldStoreId = process.env.BLOB_STORE_ID;
+  const oldDatabaseUrl = process.env.DATABASE_URL;
   process.env.FORM_DATA_DIR = folder;
   process.env.FORM_EXPORT_KEY = "test-export-key";
   delete process.env.BLOB_READ_WRITE_TOKEN;
   delete process.env.BLOB_STORE_ID;
+  delete process.env.DATABASE_URL;
   try {
     const { default: register } = await import("../api/register.js");
     const { default: submit } = await import("../api/submit-project.js");
     const { default: exportForm } = await import("../api/export.js");
+    const { default: adminRegistrations } = await import("../api/admin-registrations.js");
+    const { default: adminSubmissions } = await import("../api/admin-submissions.js");
     const request = (url, data) => new Request(url, { method: "POST", headers: { "Content-Type": "application/json", Origin: "http://localhost" }, body: JSON.stringify(data) });
     const registration = await register.fetch(request("http://localhost/api/register", validRegistration));
     assert.equal(registration.status, 201);
     const submission = await submit.fetch(request("http://localhost/api/submit-project", { ...validSubmission, projectName: '=HYPERLINK("https://example.com", "click")' }));
     assert.equal(submission.status, 201);
+    const deniedAdmin = await adminRegistrations.fetch(new Request("http://localhost/api/admin/registrations"));
+    assert.equal(deniedAdmin.status, 401);
+    const adminAuth = { Authorization: "Bearer test-export-key" };
+    const registrationsResponse = await adminRegistrations.fetch(new Request("http://localhost/api/admin/registrations", { headers: adminAuth }));
+    const submissionsResponse = await adminSubmissions.fetch(new Request("http://localhost/api/admin/submissions", { headers: adminAuth }));
+    assert.equal(registrationsResponse.status, 200);
+    assert.equal(submissionsResponse.status, 200);
+    const registrationsBody = await registrationsResponse.json();
+    const submissionsBody = await submissionsResponse.json();
+    assert.equal(registrationsBody.registrations.length, 1);
+    assert.equal(registrationsBody.registrations[0].email, "ada@example.com");
+    assert.equal(submissionsBody.submissions.length, 1);
+    assert.equal(submissionsBody.submissions[0].teamName, "Builders");
     const denied = await exportForm.fetch(new Request("http://localhost/api/export", { method: "POST", headers: { Authorization: "Bearer wrong" } }));
     assert.equal(denied.status, 401);
     const response = await exportForm.fetch(new Request("http://localhost/api/export", { method: "POST", headers: { Authorization: "Bearer test-export-key" } }));
@@ -78,6 +95,7 @@ test("records are saved and only an authorised export returns a real two-sheet w
     if (oldExportKey === undefined) delete process.env.FORM_EXPORT_KEY; else process.env.FORM_EXPORT_KEY = oldExportKey;
     if (oldBlobToken === undefined) delete process.env.BLOB_READ_WRITE_TOKEN; else process.env.BLOB_READ_WRITE_TOKEN = oldBlobToken;
     if (oldStoreId === undefined) delete process.env.BLOB_STORE_ID; else process.env.BLOB_STORE_ID = oldStoreId;
+    if (oldDatabaseUrl === undefined) delete process.env.DATABASE_URL; else process.env.DATABASE_URL = oldDatabaseUrl;
     await rm(folder, { recursive: true, force: true });
   }
 });

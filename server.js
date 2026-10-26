@@ -9,6 +9,8 @@ const apiModules = {
   "/api/register": "./api/register.js",
   "/api/submit-project": "./api/submit-project.js",
   "/api/export": "./api/export.js",
+  "/api/admin/registrations": "./api/admin-registrations.js",
+  "/api/admin/submissions": "./api/admin-submissions.js",
 };
 const types = {
   ".html": "text/html",
