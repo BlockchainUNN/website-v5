@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import ExcelJS from "exceljs";
 import { validateRegistration, validateSubmission, FormError } from "../lib/form-validation.js";
+import { buildRegistrationEmail } from "../lib/confirmation-email.js";
 
 const validRegistration = {
   firstName: "Ada", lastName: "Okafor", email: "Ada@example.com", phone: "+234 800 123 4567",
@@ -37,6 +38,24 @@ test("honeypot is hidden from autofill and only rejects the dedicated field", ()
   assert.equal(validateRegistration({ ...validRegistration, website: "https://not-the-honeypot.example" }).firstName, "Ada");
 });
 
+test("registration confirmation follows the supplied email copy", () => {
+  const email = buildRegistrationEmail(validRegistration);
+  assert.equal(email.subject, "BlockchainUNN Conference 5.0 — Registration Confirmed");
+  for (const text of [
+    "Hello Ada,",
+    "Conference Community",
+    "Hackathon Group",
+    "https://chat.whatsapp.com/JREkt6qsJRz4MneHA2sD7C",
+    "https://chat.whatsapp.com/GIB47lclaOM1YkbeEK5twB",
+    "Over ₦1,000,000",
+    "https://blockchainunn.org/register",
+  ]) {
+    assert.ok(email.text.includes(text), `missing ${text}`);
+  }
+  assert.match(email.html, /Intelligence Without Borders/);
+  assert.match(email.html, /conference-5-flyer\.jpg/);
+});
+
 test("final submission validates required links and optional links", () => {
   assert.equal(validateSubmission(validSubmission).demoUrl, "");
   assert.throws(() => validateSubmission({ ...validSubmission, pitchDeckUrl: "javascript:alert(1)" }), FormError);
@@ -50,11 +69,17 @@ test("records are saved and only an authorised export returns a real two-sheet w
   const oldBlobToken = process.env.BLOB_READ_WRITE_TOKEN;
   const oldStoreId = process.env.BLOB_STORE_ID;
   const oldDatabaseUrl = process.env.DATABASE_URL;
+  const oldBrevoKey = process.env.BREVO_API_KEY;
+  const oldGmailUser = process.env.GMAIL_SENDER_MAIL;
+  const oldGmailPass = process.env.GMAIL_APP_PASSWORD;
   process.env.FORM_DATA_DIR = folder;
   process.env.FORM_EXPORT_KEY = "test-export-key";
   delete process.env.BLOB_READ_WRITE_TOKEN;
   delete process.env.BLOB_STORE_ID;
   delete process.env.DATABASE_URL;
+  delete process.env.BREVO_API_KEY;
+  delete process.env.GMAIL_SENDER_MAIL;
+  delete process.env.GMAIL_APP_PASSWORD;
   try {
     const { default: register } = await import("../api/register.js");
     const { default: submit } = await import("../api/submit-project.js");
@@ -96,6 +121,9 @@ test("records are saved and only an authorised export returns a real two-sheet w
     if (oldBlobToken === undefined) delete process.env.BLOB_READ_WRITE_TOKEN; else process.env.BLOB_READ_WRITE_TOKEN = oldBlobToken;
     if (oldStoreId === undefined) delete process.env.BLOB_STORE_ID; else process.env.BLOB_STORE_ID = oldStoreId;
     if (oldDatabaseUrl === undefined) delete process.env.DATABASE_URL; else process.env.DATABASE_URL = oldDatabaseUrl;
+    if (oldBrevoKey === undefined) delete process.env.BREVO_API_KEY; else process.env.BREVO_API_KEY = oldBrevoKey;
+    if (oldGmailUser === undefined) delete process.env.GMAIL_SENDER_MAIL; else process.env.GMAIL_SENDER_MAIL = oldGmailUser;
+    if (oldGmailPass === undefined) delete process.env.GMAIL_APP_PASSWORD; else process.env.GMAIL_APP_PASSWORD = oldGmailPass;
     await rm(folder, { recursive: true, force: true });
   }
 });

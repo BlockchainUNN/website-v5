@@ -16,7 +16,7 @@ async function copyImages(source, destination) {
       await mkdir(to, { recursive: true });
       await copyImages(from, to);
     } else if (/\.(webp|png|svg|avif)$/i.test(entry.name) ||
-      (source === "public/images/about_hero" && /\.jpe?g$/i.test(entry.name))) {
+      (["public/images/about_hero", "public/images/email"].includes(source) && /\.jpe?g$/i.test(entry.name))) {
       await cp(from, to);
     }
   }

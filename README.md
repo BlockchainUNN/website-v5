@@ -54,9 +54,20 @@ Keep production values in `/root/website-v5/.env` (mode 600), never in git:
 | `DATABASE_POOL_MAX` | Pool size per process (default `3`) |
 | `ALLOWED_ORIGINS` | Comma-separated browser origins allowed to call the API |
 | `FORM_EXPORT_KEY` | Required for `/api/export`; generate with `openssl rand -hex 32` |
-| `RESEND_API_KEY` | Optional registration confirmation emails |
-| `CONFERENCE_FROM_EMAIL` | Verified sender address for Resend |
+| `BREVO_API_KEY` | Preferred registration confirmation provider; when set, Brevo is used |
+| `BREVO_SENDER_EMAIL` | Verified Brevo sender address (defaults to `FROM_MAIL`) |
+| `BREVO_SENDER_NAME` | Brevo sender display name |
+| `GMAIL_SENDER_MAIL` | Gmail account used for SMTP fallback |
+| `GMAIL_APP_PASSWORD` | Gmail app password for the SMTP fallback |
+| `MAIL_FROM` / `FROM_MAIL` | Sender address used by the email template |
+| `MAIL_FROM_NAME` | Sender display name |
 | `IP_HASH_SALT` | Optional salt for hashing client IPs; leave empty to skip |
+
+### Email delivery
+
+Registration confirmations use **Brevo** when `BREVO_API_KEY` is set, and fall back to **Gmail SMTP** with the v3 account credentials otherwise. The confirmation includes the conference copy, both WhatsApp community links, event details, and the Conference 5.0 flyer.
+
+For inbox delivery, the sending domain needs to be authenticated. `blockchainunn.org` currently authorizes only Titan in its SPF record and has no DKIM or DMARC record, so mail sent as `team@blockchainunn.org` through Gmail may be marked as spam. Add the SPF include, DKIM records, and a DMARC policy supplied by Brevo before relying on the Gmail fallback for a public campaign.
 
 The public endpoints validate inputs, use a hidden honeypot field, and reject cross-origin browser submissions. Add rate limiting or a challenge before promoting the forms for a large public campaign. Back up the database and exported workbook regularly, and decide who may access or retain attendee contact details.
 
