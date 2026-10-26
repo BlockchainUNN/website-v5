@@ -10,3 +10,7 @@ README.md
 tests/
 netlify.toml
 server.js
+api/
+lib/
+db/
+server-api.js
