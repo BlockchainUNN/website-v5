@@ -89,6 +89,9 @@ test("records are saved and only an authorised export returns a real two-sheet w
     const request = (url, data) => new Request(url, { method: "POST", headers: { "Content-Type": "application/json", Origin: "http://localhost" }, body: JSON.stringify(data) });
     const registration = await register.fetch(request("http://localhost/api/register", validRegistration));
     assert.equal(registration.status, 201);
+    const duplicate = await register.fetch(request("http://localhost/api/register", { ...validRegistration, firstName: "Ada Again" }));
+    assert.equal(duplicate.status, 400);
+    assert.match((await duplicate.json()).error, /already registered/i);
     const submission = await submit.fetch(request("http://localhost/api/submit-project", { ...validSubmission, projectName: '=HYPERLINK("https://example.com", "click")' }));
     assert.equal(submission.status, 201);
     const deniedAdmin = await adminRegistrations.fetch(new Request("http://localhost/api/admin/registrations"));

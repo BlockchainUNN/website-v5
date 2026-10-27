@@ -21,7 +21,7 @@ Copy `.env.example` to `.env` for local development. `DATABASE_URL` enables Post
 
 ## Conference forms and Excel export
 
-- `/register` collects conference attendance. Choosing hackathon participation reveals the track, team (maximum three people), and project idea fields. Virtual-only attendees cannot choose the in-person hackathon.
+- `/register` collects conference attendance. Choosing hackathon participation reveals the track, team (maximum three people), and project idea fields. Virtual-only attendees cannot choose the in-person hackathon. Emails are unique; a second attempt with the same email is rejected with a message.
 - `/submit-project` collects final team, project, and link details.
 - `/admin` (also `/admin/export`) is the organiser view. It asks for the organiser key, lists registrations and project submissions, and downloads one `.xlsx` file with **Registrations** and **Final submissions** sheets. It is not linked publicly.
 
@@ -33,7 +33,7 @@ Responses are stored in **PostgreSQL** in the `registrations` and `submissions` 
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f db/schema.sql
 ```
 
-The application role only needs `SELECT`, `INSERT`, and `UPDATE` on the two tables. Keep the database on a private interface when the API runs on the same host.
+The application role only needs `SELECT`, `INSERT`, and `UPDATE` on the two tables. Keep the database on a private interface when the API runs on the same host. New duplicate registration emails are blocked by a database trigger; historical duplicates are preserved until the team decides how to resolve them.
 
 ### VPS deployment
 
