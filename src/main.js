@@ -19,7 +19,7 @@ const photoNames = {
 const photo = (name, alt, className = "") => designPhoto("home", photoNames[name], alt, className);
 const logo = `<a class="brand" href="/" aria-label="Blockchain UNN home"><img src="${asset("home", "imgWhiteTransparentLogo1")}" alt="Blockchain UNN" width="279" height="73"></a>`;
 const footerLogo = `<a class="brand" href="/" aria-label="Blockchain UNN home"><img src="${asset("home", "imgWhiteTransparentLogo2")}" alt="Blockchain UNN" width="470" height="123" loading="lazy"></a>`;
-const pillIcons = { "About B-UNN": ["home", "imgArcticonsGoabout"], "What we do": ["home", "imgQuillToDo"], "Featured projects": ["home", "imgPajamasProject"], "Upcoming Events": ["home", "imgMaterialSymbolsEventOutline"], "THE COMMUNITY": ["community", "imgBoxiconsCommunity"], EVENTS: ["events", "imgIcBaselineEventNote"], "HALL OF FAME": ["community", "imgEpTrophyBase"] };
+const pillIcons = { "About BlockchainUNN": ["home", "imgArcticonsGoabout"], "What we do": ["home", "imgQuillToDo"], "Featured projects": ["home", "imgPajamasProject"], "Upcoming Events": ["home", "imgMaterialSymbolsEventOutline"], "THE COMMUNITY": ["community", "imgBoxiconsCommunity"], EVENTS: ["events", "imgIcBaselineEventNote"], "HALL OF FAME": ["community", "imgEpTrophyBase"] };
 const pill = (text, iconName = "sparkles") =>
   `<span class="section-pill">${pillIcons[text] ? designIcon(...pillIcons[text]) : icon(iconName)} ${text}</span>`;
 const action = (text, target, className = "") =>
