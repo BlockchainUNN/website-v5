@@ -270,7 +270,7 @@ function events() {
     { length: 4 },
     (_, i) => {
       const pizza = i % 2 === 0;
-      return `<article class="past-card">${designPhoto("events", pizza ? "imgImg94811" : "imgImg10781", pizza ? "Bitcoin Pizza Day 2026 community celebration" : "Audience at BUNN Conference 4.0")}<span class="year">•&nbsp; ${pizza ? "2026" : "2025"}</span><div><h3>${pizza ? "Bitcoin Pizza Day 2026" : "BUNN Conference 4.0"}</h3><p>${pizza ? "A community celebration of Bitcoin Pizza Day featuring conversations, activities, and shared experiences around the story and impact of Bitcoin." : "Our annual campus conference bringing together keynote speakers, workshops, panel discussions, networking opportunities."}</p><small>Over ${pizza ? "300" : "500"} attendees</small></div></article>`;
+      return `<article class="past-card">${designPhoto("events", pizza ? "imgImg94811" : "imgImg10781", pizza ? "Bitcoin Pizza Day 2026 community celebration" : "Audience at BlockchainUNN Conference 4.0")}<span class="year">•&nbsp; ${pizza ? "2026" : "2025"}</span><div><h3>${pizza ? "Bitcoin Pizza Day 2026" : "BlockchainUNN Conference 4.0"}</h3><p>${pizza ? "A community celebration of Bitcoin Pizza Day featuring conversations, activities, and shared experiences around the story and impact of Bitcoin." : "Our annual campus conference bringing together keynote speakers, workshops, panel discussions, networking opportunities."}</p><small>Over ${pizza ? "300" : "500"} attendees</small></div></article>`;
     },
   ).join(
     "",
