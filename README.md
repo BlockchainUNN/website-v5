@@ -21,7 +21,7 @@ Copy `.env.example` to `.env` for local development. `DATABASE_URL` enables Post
 
 ## Conference forms and Excel export
 
-- `/register` collects conference attendance. Choosing hackathon participation reveals the track, team (maximum three people), and project idea fields. Virtual-only attendees cannot choose the in-person hackathon. Emails are unique; a second attempt with the same email is rejected with a message.
+- `/register` collects conference attendance. Choosing hackathon participation reveals the track, team (maximum three people), and project idea fields. Virtual-only attendees cannot choose the in-person hackathon. Emails are unique; a second attempt with the same email is rejected with a message. Registration also requires visitors to follow the [Blockchain UNN YouTube channel](https://www.youtube.com/@blockchainunn); the confirmation is stored in the `youtube_followed` column.
 - `/submit-project` collects final team, project, and link details.
 - `/admin` (also `/admin/export`) is the organiser view. It asks for the organiser key, lists registrations and project submissions, and downloads one `.xlsx` file with **Registrations** and **Final submissions** sheets. It is not linked publicly.
 
@@ -32,6 +32,8 @@ Responses are stored in **PostgreSQL** in the `registrations` and `submissions` 
 ```sh
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f db/schema.sql
 ```
+
+`db/schema.sql` also adds `youtube_followed` to existing registration tables, so re-run it after pulling this change.
 
 The application role only needs `SELECT`, `INSERT`, and `UPDATE` on the two tables. Keep the database on a private interface when the API runs on the same host. New duplicate registration emails are blocked by a database trigger; historical duplicates are preserved until the team decides how to resolve them.
 
@@ -75,7 +77,7 @@ The public endpoints validate inputs, use a hidden honeypot field, and reject cr
 
 Original Figma assets are stored in `public/images/figma/`, with their paths and export dimensions in `src/design-assets.js`. Photos are optimized as WebP; logos, artwork and SVG icons retain their exported formats. No temporary Figma asset URLs are needed at runtime. The build copies all image formats used by the pages, including SVG.
 
-The About hero uses the original Figma photo collage in duplicated sequences to loop continuously. The animation pauses for visitors who prefer reduced motion. The Community Hall of Fame includes all six design variants, with scroll, next-card and dot navigation.
+The About hero uses the original Figma photo collage in duplicated sequences to loop continuously. The animation pauses for visitors who prefer reduced motion. The Community hero uses the same approach for its photo strip, and its motion pauses on hover. The About mission, vision and values cards reveal their full copy on hover or keyboard focus, and show it by default on touch screens. The Community Hall of Fame includes all six design variants, with scroll, next-card and dot navigation.
 
 Figma exports supply the section icons. Navigation controls also use vendored [Lucide](https://lucide.dev/) SVGs; the team social marks come from [Simple Icons](https://simpleicons.org/). Team LinkedIn and X links currently lead to the platform homepages as requested placeholders; replace the two destinations in `src/main.js` with verified member profiles before launch.
 

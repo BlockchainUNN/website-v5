@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS registrations (
   last_name     text NOT NULL,
   email         text NOT NULL,
   phone         text NOT NULL,
+  youtube_followed boolean NOT NULL DEFAULT false,
   attendance    text NOT NULL CHECK (attendance IN ('physical', 'virtual')),
   hackathon     boolean NOT NULL DEFAULT false,
   track         text NOT NULL DEFAULT '',
@@ -18,6 +19,9 @@ CREATE TABLE IF NOT EXISTS registrations (
   user_agent    text,
   ip_hash       text
 );
+
+-- Existing databases created before the YouTube requirement was added need this column.
+ALTER TABLE registrations ADD COLUMN IF NOT EXISTS youtube_followed boolean NOT NULL DEFAULT false;
 
 CREATE INDEX IF NOT EXISTS registrations_email_idx ON registrations (lower(email));
 CREATE INDEX IF NOT EXISTS registrations_submitted_at_idx ON registrations (submitted_at);

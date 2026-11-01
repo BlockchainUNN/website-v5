@@ -9,7 +9,7 @@ import { buildRegistrationEmail } from "../lib/confirmation-email.js";
 
 const validRegistration = {
   firstName: "Ada", lastName: "Okafor", email: "Ada@example.com", phone: "+234 800 123 4567",
-  attendance: "physical", hackathon: "no", website: "",
+  attendance: "physical", hackathon: "no", youtubeFollowed: "yes", website: "",
 };
 const validSubmission = {
   teamName: "Builders", leaderName: "Ada Okafor", leaderEmail: "ada@example.com",
@@ -31,6 +31,11 @@ test("hackathon registration requires physical attendance, a track, and no more 
   assert.throws(() => validateRegistration({ ...building, attendance: "virtual" }), FormError);
   assert.throws(() => validateRegistration({ ...building, track: "" }), FormError);
   assert.throws(() => validateRegistration({ ...building, team: Array(4).fill(building.team[0]) }), FormError);
+});
+
+test("registration requires following the YouTube channel", () => {
+  assert.equal(validateRegistration(validRegistration).youtubeFollowed, true);
+  assert.throws(() => validateRegistration({ ...validRegistration, youtubeFollowed: "no" }), /YouTube/);
 });
 
 test("honeypot is hidden from autofill and only rejects the dedicated field", () => {
@@ -117,6 +122,7 @@ test("records are saved and only an authorised export returns a real two-sheet w
     assert.equal(workbook.getWorksheet("Registrations").getRow(2).getCell(3).value, "Ada");
     assert.equal(workbook.getWorksheet("Final submissions").getRow(2).getCell(3).value, "Builders");
     assert.equal(workbook.getWorksheet("Registrations").getRow(2).getCell(6).value, "+234 800 123 4567");
+    assert.equal(workbook.getWorksheet("Registrations").getRow(2).getCell(20).value, "Yes");
     assert.equal(workbook.getWorksheet("Final submissions").getRow(2).getCell(7).value, '\'=HYPERLINK("https://example.com", "click")');
   } finally {
     if (oldDataDir === undefined) delete process.env.FORM_DATA_DIR; else process.env.FORM_DATA_DIR = oldDataDir;
