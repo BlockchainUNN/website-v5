@@ -50,7 +50,7 @@ test("registration confirmation follows the supplied email copy", () => {
     "Hello Ada,",
     "Conference Community",
     "Hackathon Group",
-    "https://chat.whatsapp.com/JREkt6qsJRz4MneHA2sD7C",
+    "https://chat.whatsapp.com/LQj22F0q8aqIaBYHIkuJJo",
     "https://chat.whatsapp.com/GIB47lclaOM1YkbeEK5twB",
     "Over ₦1,000,000",
     "https://blockchainunn.org/register",
