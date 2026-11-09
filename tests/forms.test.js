@@ -51,7 +51,7 @@ test("registration confirmation follows the supplied email copy", () => {
     "Conference Community",
     "Hackathon Group",
     "https://chat.whatsapp.com/LQj22F0q8aqIaBYHIkuJJo",
-    "https://chat.whatsapp.com/GIB47lclaOM1YkbeEK5twB",
+    "https://chat.whatsapp.com/HYOaMBQq2rz4ECsPlBHOr4",
     "Over ₦1,000,000",
     "https://blockchainunn.org/register",
   ]) {
