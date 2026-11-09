@@ -38,6 +38,16 @@ test("registration requires following the YouTube channel", () => {
   assert.throws(() => validateRegistration({ ...validRegistration, youtubeFollowed: "no" }), /YouTube/);
 });
 
+test("raffle entry requires both handles and strips leading @", () => {
+  const entered = validateRegistration({ ...validRegistration, raffleEntry: "yes", instagramHandle: "@ada", tiktokHandle: "@ada" });
+  assert.equal(entered.raffleEntry, true);
+  assert.equal(entered.instagramHandle, "ada");
+  assert.equal(entered.tiktokHandle, "ada");
+  assert.throws(() => validateRegistration({ ...validRegistration, raffleEntry: "yes", instagramHandle: "@ada" }), FormError);
+  assert.throws(() => validateRegistration({ ...validRegistration, instagramHandle: "@ada" }), FormError);
+  assert.equal(validateRegistration({ ...validRegistration }).raffleEntry, false);
+});
+
 test("honeypot is hidden from autofill and only rejects the dedicated field", () => {
   assert.throws(() => validateRegistration({ ...validRegistration, bunn_hp: "spam" }), FormError);
   assert.equal(validateRegistration({ ...validRegistration, website: "https://not-the-honeypot.example" }).firstName, "Ada");
@@ -52,6 +62,9 @@ test("registration confirmation follows the supplied email copy", () => {
     "Hackathon Group",
     "https://chat.whatsapp.com/LQj22F0q8aqIaBYHIkuJJo",
     "https://chat.whatsapp.com/HYOaMBQq2rz4ECsPlBHOr4",
+    "Raffle draw",
+    "https://www.tiktok.com/@blockchainunn",
+    "https://www.instagram.com/blockchainunn",
     "Over ₦1,000,000",
     "https://blockchainunn.org/register",
   ]) {

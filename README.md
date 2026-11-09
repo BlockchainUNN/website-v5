@@ -21,7 +21,7 @@ Copy `.env.example` to `.env` for local development. `DATABASE_URL` enables Post
 
 ## Conference forms and Excel export
 
-- `/register` collects conference attendance. Choosing hackathon participation reveals the track, team (maximum three people), and project idea fields. Virtual-only attendees cannot choose the in-person hackathon. Emails are unique; a second attempt with the same email is rejected with a message. Registration also requires visitors to follow the [Blockchain UNN YouTube channel](https://www.youtube.com/@blockchainunn); the confirmation is stored in the `youtube_followed` column.
+- `/register` collects conference attendance. Choosing hackathon participation reveals the track, team (maximum three people), and project idea fields. Virtual-only attendees cannot choose the in-person hackathon. Emails are unique; a second attempt with the same email is rejected with a message. Registration also requires visitors to follow the [Blockchain UNN YouTube channel](https://www.youtube.com/@blockchainunn); the confirmation is stored in the `youtube_followed` column. Raffle entry is optional: entrants follow Blockchain UNN on TikTok and Instagram and submit both handles, stored in `raffle_entry`, `instagram_handle`, and `tiktok_handle`.
 - `/submit-project` collects final team, project, and link details.
 - `/admin` (also `/admin/export`) is the organiser view. It asks for the organiser key, lists registrations and project submissions, and downloads one `.xlsx` file with **Registrations** and **Final submissions** sheets. It is not linked publicly.
 
@@ -33,7 +33,7 @@ Responses are stored in **PostgreSQL** in the `registrations` and `submissions` 
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f db/schema.sql
 ```
 
-`db/schema.sql` also adds `youtube_followed` to existing registration tables, so re-run it after pulling this change.
+`db/schema.sql` also adds `youtube_followed`, `raffle_entry`, `instagram_handle`, and `tiktok_handle` to existing registration tables, so re-run it after pulling this change.
 
 The application role only needs `SELECT`, `INSERT`, and `UPDATE` on the two tables. Keep the database on a private interface when the API runs on the same host. New duplicate registration emails are blocked by a database trigger; historical duplicates are preserved until the team decides how to resolve them.
 
@@ -67,7 +67,7 @@ Keep production values in `/root/website-v5/.env` (mode 600), never in git:
 
 ### Email delivery
 
-Registration confirmations use **Brevo** when `BREVO_API_KEY` is set, and fall back to **Gmail SMTP** with the v3 account credentials otherwise. The confirmation includes the conference copy, both WhatsApp community links, event details, and the Conference 5.0 flyer.
+Registration confirmations use **Brevo** when `BREVO_API_KEY` is set, and fall back to **Gmail SMTP** with the v3 account credentials otherwise. The confirmation includes the conference copy, both WhatsApp community links, event details, the raffle draw and social links, and the Conference 5.0 flyer.
 
 For inbox delivery, the sending domain needs to be authenticated. `blockchainunn.org` currently authorizes only Titan in its SPF record and has no DKIM or DMARC record, so mail sent as `team@blockchainunn.org` through Gmail may be marked as spam. Add the SPF include, DKIM records, and a DMARC policy supplied by Brevo before relying on the Gmail fallback for a public campaign.
 

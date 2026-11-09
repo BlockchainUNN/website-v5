@@ -10,6 +10,9 @@ CREATE TABLE IF NOT EXISTS registrations (
   email         text NOT NULL,
   phone         text NOT NULL,
   youtube_followed boolean NOT NULL DEFAULT false,
+  raffle_entry  boolean NOT NULL DEFAULT false,
+  instagram_handle text NOT NULL DEFAULT '',
+  tiktok_handle text NOT NULL DEFAULT '',
   attendance    text NOT NULL CHECK (attendance IN ('physical', 'virtual')),
   hackathon     boolean NOT NULL DEFAULT false,
   track         text NOT NULL DEFAULT '',
@@ -20,8 +23,11 @@ CREATE TABLE IF NOT EXISTS registrations (
   ip_hash       text
 );
 
--- Existing databases created before the YouTube requirement was added need this column.
+-- Existing databases created before these fields were added need these columns.
 ALTER TABLE registrations ADD COLUMN IF NOT EXISTS youtube_followed boolean NOT NULL DEFAULT false;
+ALTER TABLE registrations ADD COLUMN IF NOT EXISTS raffle_entry boolean NOT NULL DEFAULT false;
+ALTER TABLE registrations ADD COLUMN IF NOT EXISTS instagram_handle text NOT NULL DEFAULT '';
+ALTER TABLE registrations ADD COLUMN IF NOT EXISTS tiktok_handle text NOT NULL DEFAULT '';
 
 CREATE INDEX IF NOT EXISTS registrations_email_idx ON registrations (lower(email));
 CREATE INDEX IF NOT EXISTS registrations_submitted_at_idx ON registrations (submitted_at);
