@@ -82,3 +82,12 @@ CREATE TABLE IF NOT EXISTS submissions (
 
 CREATE INDEX IF NOT EXISTS submissions_leader_email_idx ON submissions (lower(leader_email));
 CREATE INDEX IF NOT EXISTS submissions_submitted_at_idx ON submissions (submitted_at);
+
+CREATE TABLE IF NOT EXISTS form_status (
+  id                 integer PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  registrations_open boolean NOT NULL DEFAULT true,
+  submissions_open   boolean NOT NULL DEFAULT true,
+  updated_at         timestamptz NOT NULL DEFAULT now()
+);
+
+INSERT INTO form_status (id) VALUES (1) ON CONFLICT (id) DO NOTHING;

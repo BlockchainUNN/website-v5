@@ -1,11 +1,12 @@
 import { readPayload, json, handleError, requestMeta } from "../lib/form-api.js";
 import { validateRegistration } from "../lib/form-validation.js";
-import { saveRecord, markEmailSent } from "../lib/form-storage.js";
+import { saveRecord, markEmailSent, assertFormOpen } from "../lib/form-storage.js";
 import { sendRegistrationConfirmation } from "../lib/confirmation-email.js";
 
 export default {
   async fetch(request) {
     try {
+      await assertFormOpen("registrations");
       const registration = validateRegistration(await readPayload(request));
       const record = await saveRecord("registrations", registration, requestMeta(request));
       let emailSent = false;

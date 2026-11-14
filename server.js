@@ -13,6 +13,8 @@ const apiModules = {
   "/api/export/submissions": "./api/export.js",
   "/api/admin/registrations": "./api/admin-registrations.js",
   "/api/admin/submissions": "./api/admin-submissions.js",
+  "/api/forms/status": "./api/forms-status.js",
+  "/api/admin/form-status": "./api/admin-form-status.js",
 };
 const types = {
   ".html": "text/html",

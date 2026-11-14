@@ -1,10 +1,11 @@
 import { readPayload, json, handleError, requestMeta } from "../lib/form-api.js";
 import { validateSubmission } from "../lib/form-validation.js";
-import { saveRecord } from "../lib/form-storage.js";
+import { saveRecord, assertFormOpen } from "../lib/form-storage.js";
 
 export default {
   async fetch(request) {
     try {
+      await assertFormOpen("submissions");
       const submission = validateSubmission(await readPayload(request));
       const record = await saveRecord("submissions", submission, requestMeta(request));
       return json({ id: record.id }, 201);

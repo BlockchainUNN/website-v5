@@ -149,6 +149,15 @@ test("records are saved and only an authorised export returns a real two-sheet w
     await registrationsWorkbook.xlsx.load(Buffer.from(await onlyRegistrations.arrayBuffer()));
     assert.deepEqual(registrationsWorkbook.worksheets.map((sheet) => sheet.name), ["Registrations"]);
     assert.equal(registrationsWorkbook.getWorksheet("Registrations").getRow(2).getCell(3).value, "Ada");
+    const { setFormStatus } = await import("../lib/form-storage.js");
+    await setFormStatus({ registrationsOpen: false, submissionsOpen: false });
+    const closedRegistration = await register.fetch(request("http://localhost/api/register", validRegistration));
+    assert.equal(closedRegistration.status, 400);
+    assert.match((await closedRegistration.json()).error, /closed/i);
+    const closedSubmission = await submit.fetch(request("http://localhost/api/submit-project", validSubmission));
+    assert.equal(closedSubmission.status, 400);
+    assert.match((await closedSubmission.json()).error, /closed/i);
+    await setFormStatus({ registrationsOpen: true, submissionsOpen: true });
   } finally {
     if (oldDataDir === undefined) delete process.env.FORM_DATA_DIR; else process.env.FORM_DATA_DIR = oldDataDir;
     if (oldExportKey === undefined) delete process.env.FORM_EXPORT_KEY; else process.env.FORM_EXPORT_KEY = oldExportKey;

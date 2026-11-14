@@ -21,7 +21,7 @@ export function submissionPage() {
 }
 
 export function adminPage() {
-  return `<div class="forms-page"><div class="forms-shell admin-shell"><a class="form-back" href="/events">${icon("arrow-left")} Back to events</a>${formIntro("ORGANISER ACCESS", "Form responses", "Enter the organiser key to view registrations and project submissions, or download the Excel workbook.")}<form id="admin-gate" class="event-form admin-gate"><label class="form-field"><span>Organiser key</span><input name="key" type="password" autocomplete="current-password" required></label><div class="form-submit-row"><p>The key is kept in this browser tab only.</p><button type="submit" class="form-submit">Unlock ${icon("arrow-right")}</button></div><p class="form-message" role="alert" aria-live="polite"></p></form><section id="admin-panel" hidden><div class="admin-toolbar"><div><span class="form-eyebrow">CONFERENCE 5.0</span><h2>Responses</h2><p class="admin-updated" data-admin-updated></p></div><div class="admin-actions"><button type="button" class="admin-button" data-admin-refresh>Refresh</button><button type="button" class="admin-button admin-button-primary" data-admin-export="all">Download all</button><button type="button" class="admin-button" data-admin-export="submissions">Hackathon projects</button><button type="button" class="admin-button" data-admin-export="registrations">Registrations</button><button type="button" class="admin-button" data-admin-lock>Lock</button></div></div><p class="admin-status" role="status" aria-live="polite"></p><div class="admin-summary"><div><strong data-admin-count="registrations">0</strong><span>Registrations</span></div><div><strong data-admin-count="submissions">0</strong><span>Project submissions</span></div><div><strong data-admin-count="hackathon">0</strong><span>Hackathon teams</span></div><div><strong data-admin-count="raffle">0</strong><span>Raffle entries</span></div></div><section class="admin-section"><div class="admin-section-head"><h3>Registrations</h3><input type="search" data-admin-search="registrations" placeholder="Search name, email, phone…" aria-label="Search registrations"></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Submitted</th><th>Name</th><th>Email</th><th>Phone / WhatsApp</th><th>Attendance</th><th>Hackathon</th><th>Raffle</th><th>Team</th><th>Project idea</th></tr></thead><tbody data-admin-table="registrations"></tbody></table></div></section><section class="admin-section"><div class="admin-section-head"><h3>Final submissions</h3><input type="search" data-admin-search="submissions" placeholder="Search team, project, email…" aria-label="Search submissions"></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Submitted</th><th>Team</th><th>Leader</th><th>Other members</th><th>Project</th><th>One-liner</th><th>Description</th><th>Links</th></tr></thead><tbody data-admin-table="submissions"></tbody></table></div></section></section></div></div>`;
+  return `<div class="forms-page"><div class="forms-shell admin-shell"><a class="form-back" href="/events">${icon("arrow-left")} Back to events</a>${formIntro("ORGANISER ACCESS", "Form responses", "Enter the organiser key to view registrations and project submissions, or download the Excel workbook.")}<form id="admin-gate" class="event-form admin-gate"><label class="form-field"><span>Organiser key</span><input name="key" type="password" autocomplete="current-password" required></label><div class="form-submit-row"><p>The key is kept in this browser tab only.</p><button type="submit" class="form-submit">Unlock ${icon("arrow-right")}</button></div><p class="form-message" role="alert" aria-live="polite"></p></form><section id="admin-panel" hidden><div class="admin-toolbar"><div><span class="form-eyebrow">CONFERENCE 5.0</span><h2>Responses</h2><p class="admin-updated" data-admin-updated></p></div><div class="admin-actions"><button type="button" class="admin-button" data-admin-refresh>Refresh</button><button type="button" class="admin-button admin-button-primary" data-admin-export="all">Download all</button><button type="button" class="admin-button" data-admin-export="submissions">Hackathon projects</button><button type="button" class="admin-button" data-admin-export="registrations">Registrations</button><button type="button" class="admin-button" data-admin-lock>Lock</button></div></div><p class="admin-status" role="status" aria-live="polite"></p><div class="admin-summary"><div><strong data-admin-count="registrations">0</strong><span>Registrations</span></div><div><strong data-admin-count="submissions">0</strong><span>Project submissions</span></div><div><strong data-admin-count="hackathon">0</strong><span>Hackathon teams</span></div><div><strong data-admin-count="raffle">0</strong><span>Raffle entries</span></div></div><section class="admin-section admin-availability"><div class="admin-section-head"><div><h3>Form availability</h3><p>Close a form to stop new entries immediately.</p></div></div><div class="admin-availability-grid"><button type="button" class="admin-toggle" data-admin-toggle="registrations">Registrations <strong data-admin-status="registrations">Open</strong></button><button type="button" class="admin-toggle" data-admin-toggle="submissions">Project submissions <strong data-admin-status="submissions">Open</strong></button></div></section><section class="admin-section"><div class="admin-section-head"><h3>Registrations</h3><input type="search" data-admin-search="registrations" placeholder="Search name, email, phone…" aria-label="Search registrations"></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Submitted</th><th>Name</th><th>Email</th><th>Phone / WhatsApp</th><th>Attendance</th><th>Hackathon</th><th>Raffle</th><th>Team</th><th>Project idea</th></tr></thead><tbody data-admin-table="registrations"></tbody></table></div></section><section class="admin-section"><div class="admin-section-head"><h3>Final submissions</h3><input type="search" data-admin-search="submissions" placeholder="Search team, project, email…" aria-label="Search submissions"></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Submitted</th><th>Team</th><th>Leader</th><th>Other members</th><th>Project</th><th>One-liner</th><th>Description</th><th>Links</th></tr></thead><tbody data-admin-table="submissions"></tbody></table></div></section></section></div></div>`;
 }
 
 function value(form, name) { return form.elements.namedItem(name)?.value?.trim() || ""; }
@@ -56,6 +56,24 @@ function bindForm(form, endpoint, collect) {
       button.disabled = false;
     }
   });
+}
+
+async function applyAvailability(form, kind) {
+  if (!form) return;
+  try {
+    const response = await fetch("/api/forms/status", { cache: "no-store" });
+    if (!response.ok) return;
+    const status = await response.json();
+    const open = kind === "registrations" ? status.registrationsOpen : status.submissionsOpen;
+    if (open) return;
+    const message = form.querySelector(".form-message");
+    message.textContent = kind === "registrations" ? "Registration is currently closed." : "Project submissions are currently closed.";
+    message.dataset.state = "error";
+    const submit = form.querySelector('button[type="submit"]');
+    if (submit) submit.disabled = true;
+  } catch {
+    // Availability is best-effort; the API still rejects closed forms.
+  }
 }
 
 export function initForms() {
@@ -115,8 +133,11 @@ export function initForms() {
     updateRaffle();
     update();
     bindForm(registration, "/api/register", collectRegistration);
+    applyAvailability(registration, "registrations");
   }
-  bindForm(document.querySelector("#project-form"), "/api/submit-project", collectSubmission);
+  const projectForm = document.querySelector("#project-form");
+  bindForm(projectForm, "/api/submit-project", collectSubmission);
+  applyAvailability(projectForm, "submissions");
   initAdmin();
 }
 
@@ -161,6 +182,7 @@ function initAdmin() {
   const storageKey = "bunn.admin.key";
   let key = "";
   let data = { registrations: [], submissions: [] };
+  let formStatus = { registrationsOpen: true, submissionsOpen: true };
 
   function render(kind) {
     const rows = data[kind] || [];
@@ -183,17 +205,29 @@ function initAdmin() {
     updated.textContent = `Updated ${new Date().toLocaleString()}`;
   }
 
+  function renderAvailability() {
+    for (const kind of ["registrations", "submissions"]) {
+      const open = kind === "registrations" ? formStatus.registrationsOpen : formStatus.submissionsOpen;
+      const button = document.querySelector(`[data-admin-toggle="${kind}"]`);
+      if (!button) continue;
+      button.dataset.open = String(open);
+      button.querySelector("[data-admin-status]").textContent = open ? "Open" : "Closed";
+    }
+  }
+
   async function load(nextKey, quiet = false) {
     if (!quiet) status.textContent = "Loading responses…";
     const headers = { Authorization: `Bearer ${nextKey}` };
-    const [registrationsResponse, submissionsResponse] = await Promise.all([
+    const [registrationsResponse, submissionsResponse, statusResponse] = await Promise.all([
       fetch("/api/admin/registrations", { headers, cache: "no-store" }),
       fetch("/api/admin/submissions", { headers, cache: "no-store" }),
+      fetch("/api/admin/form-status", { headers, cache: "no-store" }),
     ]);
-    if (registrationsResponse.status === 401 || submissionsResponse.status === 401) throw new Error("Invalid organiser key.");
-    if (!registrationsResponse.ok || !submissionsResponse.ok) throw new Error("Could not load the responses. Try again.");
-    const [registrationsBody, submissionsBody] = await Promise.all([registrationsResponse.json(), submissionsResponse.json()]);
+    if ([registrationsResponse, submissionsResponse, statusResponse].some((response) => response.status === 401)) throw new Error("Invalid organiser key.");
+    if (!registrationsResponse.ok || !submissionsResponse.ok || !statusResponse.ok) throw new Error("Could not load the responses. Try again.");
+    const [registrationsBody, submissionsBody, statusBody] = await Promise.all([registrationsResponse.json(), submissionsResponse.json(), statusResponse.json()]);
     key = nextKey;
+    formStatus = statusBody;
     data = { registrations: registrationsBody.registrations || [], submissions: submissionsBody.submissions || [] };
     sessionStorage.setItem(storageKey, key);
     gate.hidden = true;
@@ -201,6 +235,7 @@ function initAdmin() {
     gateMessage.textContent = "";
     status.textContent = "";
     renderAll();
+    renderAvailability();
   }
 
   async function attempt(nextKey, quiet = false) {
@@ -277,6 +312,37 @@ function initAdmin() {
         status.textContent = error.message;
       } finally {
         exportButtons.forEach((item) => { item.disabled = false; });
+      }
+    });
+  }
+
+  for (const button of document.querySelectorAll("[data-admin-toggle]")) {
+    button.addEventListener("click", async () => {
+      if (!key) return;
+      const kind = button.dataset.adminToggle;
+      const field = kind === "registrations" ? "registrationsOpen" : "submissionsOpen";
+      const next = { ...formStatus, [field]: !formStatus[field] };
+      button.disabled = true;
+      status.textContent = `Updating ${kind === "registrations" ? "registration" : "submission"} availability…`;
+      try {
+        const response = await fetch("/api/admin/form-status", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ registrationsOpen: next.registrationsOpen, submissionsOpen: next.submissionsOpen }),
+        });
+        if (!response.ok) {
+          const body = await response.json().catch(() => ({}));
+          throw new Error(body.error || "Could not update form availability.");
+        }
+        formStatus = await response.json();
+        renderAvailability();
+        status.textContent = kind === "registrations"
+          ? `Registrations are now ${formStatus.registrationsOpen ? "open" : "closed"}.`
+          : `Project submissions are now ${formStatus.submissionsOpen ? "open" : "closed"}.`;
+      } catch (error) {
+        status.textContent = error.message;
+      } finally {
+        button.disabled = false;
       }
     });
   }
