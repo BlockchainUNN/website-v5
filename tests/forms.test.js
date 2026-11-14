@@ -137,6 +137,18 @@ test("records are saved and only an authorised export returns a real two-sheet w
     assert.equal(workbook.getWorksheet("Registrations").getRow(2).getCell(6).value, "+234 800 123 4567");
     assert.equal(workbook.getWorksheet("Registrations").getRow(2).getCell(20).value, "Yes");
     assert.equal(workbook.getWorksheet("Final submissions").getRow(2).getCell(7).value, '\'=HYPERLINK("https://example.com", "click")');
+    const onlySubmissions = await exportForm.fetch(new Request("http://localhost/api/export/submissions", { method: "POST", headers: { Authorization: "Bearer test-export-key" } }));
+    assert.equal(onlySubmissions.status, 200);
+    const submissionsWorkbook = new ExcelJS.Workbook();
+    await submissionsWorkbook.xlsx.load(Buffer.from(await onlySubmissions.arrayBuffer()));
+    assert.deepEqual(submissionsWorkbook.worksheets.map((sheet) => sheet.name), ["Final submissions"]);
+    assert.equal(submissionsWorkbook.getWorksheet("Final submissions").getRow(2).getCell(3).value, "Builders");
+    const onlyRegistrations = await exportForm.fetch(new Request("http://localhost/api/export/registrations", { method: "POST", headers: { Authorization: "Bearer test-export-key" } }));
+    assert.equal(onlyRegistrations.status, 200);
+    const registrationsWorkbook = new ExcelJS.Workbook();
+    await registrationsWorkbook.xlsx.load(Buffer.from(await onlyRegistrations.arrayBuffer()));
+    assert.deepEqual(registrationsWorkbook.worksheets.map((sheet) => sheet.name), ["Registrations"]);
+    assert.equal(registrationsWorkbook.getWorksheet("Registrations").getRow(2).getCell(3).value, "Ada");
   } finally {
     if (oldDataDir === undefined) delete process.env.FORM_DATA_DIR; else process.env.FORM_DATA_DIR = oldDataDir;
     if (oldExportKey === undefined) delete process.env.FORM_EXPORT_KEY; else process.env.FORM_EXPORT_KEY = oldExportKey;

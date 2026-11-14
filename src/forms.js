@@ -21,7 +21,7 @@ export function submissionPage() {
 }
 
 export function adminPage() {
-  return `<div class="forms-page"><div class="forms-shell admin-shell"><a class="form-back" href="/events">${icon("arrow-left")} Back to events</a>${formIntro("ORGANISER ACCESS", "Form responses", "Enter the organiser key to view registrations and project submissions, or download the Excel workbook.")}<form id="admin-gate" class="event-form admin-gate"><label class="form-field"><span>Organiser key</span><input name="key" type="password" autocomplete="current-password" required></label><div class="form-submit-row"><p>The key is kept in this browser tab only.</p><button type="submit" class="form-submit">Unlock ${icon("arrow-right")}</button></div><p class="form-message" role="alert" aria-live="polite"></p></form><section id="admin-panel" hidden><div class="admin-toolbar"><div><span class="form-eyebrow">CONFERENCE 5.0</span><h2>Responses</h2><p class="admin-updated" data-admin-updated></p></div><div class="admin-actions"><button type="button" class="admin-button" data-admin-refresh>Refresh</button><button type="button" class="admin-button admin-button-primary" data-admin-export>Download Excel</button><button type="button" class="admin-button" data-admin-lock>Lock</button></div></div><p class="admin-status" role="status" aria-live="polite"></p><div class="admin-summary"><div><strong data-admin-count="registrations">0</strong><span>Registrations</span></div><div><strong data-admin-count="submissions">0</strong><span>Project submissions</span></div><div><strong data-admin-count="hackathon">0</strong><span>Hackathon teams</span></div><div><strong data-admin-count="raffle">0</strong><span>Raffle entries</span></div></div><section class="admin-section"><div class="admin-section-head"><h3>Registrations</h3><input type="search" data-admin-search="registrations" placeholder="Search name, email, phone…" aria-label="Search registrations"></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Submitted</th><th>Name</th><th>Email</th><th>Phone / WhatsApp</th><th>Attendance</th><th>Hackathon</th><th>Raffle</th><th>Team</th><th>Project idea</th></tr></thead><tbody data-admin-table="registrations"></tbody></table></div></section><section class="admin-section"><div class="admin-section-head"><h3>Final submissions</h3><input type="search" data-admin-search="submissions" placeholder="Search team, project, email…" aria-label="Search submissions"></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Submitted</th><th>Team</th><th>Leader</th><th>Other members</th><th>Project</th><th>One-liner</th><th>Description</th><th>Links</th></tr></thead><tbody data-admin-table="submissions"></tbody></table></div></section></section></div></div>`;
+  return `<div class="forms-page"><div class="forms-shell admin-shell"><a class="form-back" href="/events">${icon("arrow-left")} Back to events</a>${formIntro("ORGANISER ACCESS", "Form responses", "Enter the organiser key to view registrations and project submissions, or download the Excel workbook.")}<form id="admin-gate" class="event-form admin-gate"><label class="form-field"><span>Organiser key</span><input name="key" type="password" autocomplete="current-password" required></label><div class="form-submit-row"><p>The key is kept in this browser tab only.</p><button type="submit" class="form-submit">Unlock ${icon("arrow-right")}</button></div><p class="form-message" role="alert" aria-live="polite"></p></form><section id="admin-panel" hidden><div class="admin-toolbar"><div><span class="form-eyebrow">CONFERENCE 5.0</span><h2>Responses</h2><p class="admin-updated" data-admin-updated></p></div><div class="admin-actions"><button type="button" class="admin-button" data-admin-refresh>Refresh</button><button type="button" class="admin-button admin-button-primary" data-admin-export="all">Download all</button><button type="button" class="admin-button" data-admin-export="submissions">Hackathon projects</button><button type="button" class="admin-button" data-admin-export="registrations">Registrations</button><button type="button" class="admin-button" data-admin-lock>Lock</button></div></div><p class="admin-status" role="status" aria-live="polite"></p><div class="admin-summary"><div><strong data-admin-count="registrations">0</strong><span>Registrations</span></div><div><strong data-admin-count="submissions">0</strong><span>Project submissions</span></div><div><strong data-admin-count="hackathon">0</strong><span>Hackathon teams</span></div><div><strong data-admin-count="raffle">0</strong><span>Raffle entries</span></div></div><section class="admin-section"><div class="admin-section-head"><h3>Registrations</h3><input type="search" data-admin-search="registrations" placeholder="Search name, email, phone…" aria-label="Search registrations"></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Submitted</th><th>Name</th><th>Email</th><th>Phone / WhatsApp</th><th>Attendance</th><th>Hackathon</th><th>Raffle</th><th>Team</th><th>Project idea</th></tr></thead><tbody data-admin-table="registrations"></tbody></table></div></section><section class="admin-section"><div class="admin-section-head"><h3>Final submissions</h3><input type="search" data-admin-search="submissions" placeholder="Search team, project, email…" aria-label="Search submissions"></div><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Submitted</th><th>Team</th><th>Leader</th><th>Other members</th><th>Project</th><th>One-liner</th><th>Description</th><th>Links</th></tr></thead><tbody data-admin-table="submissions"></tbody></table></div></section></section></div></div>`;
 }
 
 function value(form, name) { return form.elements.namedItem(name)?.value?.trim() || ""; }
@@ -150,7 +150,7 @@ function initAdmin() {
     submissions: document.querySelector('[data-admin-table="submissions"]'),
   };
   const searchInputs = [...document.querySelectorAll("[data-admin-search]")];
-  const exportButton = document.querySelector("[data-admin-export]");
+  const exportButtons = [...document.querySelectorAll("[data-admin-export]")];
   const refreshButton = document.querySelector("[data-admin-refresh]");
   const lockButton = document.querySelector("[data-admin-lock]");
   const meta = document.createElement("meta");
@@ -249,29 +249,37 @@ function initAdmin() {
     keyInput.focus();
   });
 
-  exportButton.addEventListener("click", async () => {
-    if (!key) return;
-    exportButton.disabled = true;
-    status.textContent = "Preparing the Excel file…";
-    try {
-      const response = await fetch("/api/export", { method: "POST", headers: { Authorization: `Bearer ${key}` } });
-      if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        throw new Error(body.error || "Export failed.");
+  for (const button of exportButtons) {
+    button.addEventListener("click", async () => {
+      if (!key) return;
+      const type = button.dataset.adminExport || "all";
+      exportButtons.forEach((item) => { item.disabled = true; });
+      status.textContent = type === "submissions"
+        ? "Preparing hackathon projects…"
+        : type === "registrations"
+          ? "Preparing registrations…"
+          : "Preparing the Excel file…";
+      try {
+        const endpoint = type === "all" ? "/api/export" : `/api/export/${type}`;
+        const response = await fetch(endpoint, { method: "POST", headers: { Authorization: `Bearer ${key}` } });
+        if (!response.ok) {
+          const body = await response.json().catch(() => ({}));
+          throw new Error(body.error || "Export failed.");
+        }
+        const url = URL.createObjectURL(await response.blob());
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `blockchain-unn-${type === "all" ? "forms" : type}-${new Date().toISOString().slice(0, 10)}.xlsx`;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 60_000);
+        status.textContent = "Excel file downloaded.";
+      } catch (error) {
+        status.textContent = error.message;
+      } finally {
+        exportButtons.forEach((item) => { item.disabled = false; });
       }
-      const url = URL.createObjectURL(await response.blob());
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `blockchain-unn-forms-${new Date().toISOString().slice(0, 10)}.xlsx`;
-      link.click();
-      setTimeout(() => URL.revokeObjectURL(url), 60_000);
-      status.textContent = "Excel file downloaded.";
-    } catch (error) {
-      status.textContent = error.message;
-    } finally {
-      exportButton.disabled = false;
-    }
-  });
+    });
+  }
 
   const saved = sessionStorage.getItem(storageKey);
   if (saved) attempt(saved, true);

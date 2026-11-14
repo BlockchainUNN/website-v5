@@ -23,7 +23,7 @@ Copy `.env.example` to `.env` for local development. `DATABASE_URL` enables Post
 
 - `/register` collects conference attendance. Choosing hackathon participation reveals the track, team (maximum three people), and project idea fields. Virtual-only attendees cannot choose the in-person hackathon. Emails are unique; a second attempt with the same email is rejected with a message. Registration also requires visitors to follow the [Blockchain UNN YouTube channel](https://www.youtube.com/@blockchainunn); the confirmation is stored in the `youtube_followed` column. Raffle entry is optional: entrants follow Blockchain UNN on TikTok and Instagram and submit both handles, stored in `raffle_entry`, `instagram_handle`, and `tiktok_handle`.
 - `/submit-project` collects final team, project, and link details.
-- `/admin` (also `/admin/export`) is the organiser view. It asks for the organiser key, lists registrations and project submissions, and downloads one `.xlsx` file with **Registrations** and **Final submissions** sheets. It is not linked publicly.
+- `/admin` (also `/admin/export`) is the organiser view. It asks for the organiser key, lists registrations and project submissions, and can download **all responses**, **registrations only**, or **hackathon projects only** as `.xlsx` files. It is not linked publicly.
 
 Responses are stored in **PostgreSQL** in the `registrations` and `submissions` tables (`db/schema.sql`). Export reads those rows and generates one workbook. If `DATABASE_URL` is absent, the handlers fall back to a private Vercel Blob store when `BLOB_READ_WRITE_TOKEN` or `BLOB_STORE_ID` is set, and to ignored `.local-data/` files for local development.
 
